@@ -1,14 +1,18 @@
 # QQ群机器人
 
 #### 介绍
+
 QQ群机器人,基于mirai,一开始的目的是为了每天在群里看每日新闻简讯
 
 #### 软件架构
-springboot 2.4.1
-okhttp
-jsoup
-redis
 
+springboot 2.4.1
+
+okhttp
+
+jsoup
+
+redis
 
 #### 参与贡献
 
