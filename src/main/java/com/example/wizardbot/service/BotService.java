@@ -237,7 +237,7 @@ public class BotService {
 
         logger.info("news,重新获取");
 
-        String url = "https://t.me/s/pojieapk";
+        String url = "******";//狗头保命
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
         // 设置代理地址
