@@ -1,0 +1,270 @@
+2021-01-17 14:44:40.862  INFO 10312 --- [restartedMain] c.e.wizardbot.WizardbotApplication       : Starting WizardbotApplication using Java 1.8.0_221 on LAPTOP-ANEHFJAH with PID 10312 (E:\springbootproject\wizardbot\target\classes started by wangz in E:\springbootproject\wizardbot)
+2021-01-17 14:44:40.867  INFO 10312 --- [restartedMain] c.e.wizardbot.WizardbotApplication       : The following profiles are active: dev
+2021-01-17 14:44:40.931  INFO 10312 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2021-01-17 14:44:40.932  INFO 10312 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2021-01-17 14:44:40.937  WARN 10312 --- [background-preinit] o.s.h.c.j.Jackson2ObjectMapperBuilder    : For Jackson Kotlin classes support please add "com.fasterxml.jackson.module:jackson-module-kotlin" to the classpath
+2021-01-17 14:44:41.705  INFO 10312 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2021-01-17 14:44:41.707  INFO 10312 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2021-01-17 14:44:41.750  INFO 10312 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 24 ms. Found 0 Redis repository interfaces.
+2021-01-17 14:44:42.369  INFO 10312 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2021-01-17 14:44:42.379  INFO 10312 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2021-01-17 14:44:42.380  INFO 10312 --- [restartedMain] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.41]
+2021-01-17 14:44:42.496  INFO 10312 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2021-01-17 14:44:42.497  INFO 10312 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1564 ms
+2021-01-17 14:44:42.952  INFO 10312 --- [restartedMain] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2021-01-17 14:44:43.131  WARN 10312 --- [restartedMain] ion$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates or check your Thymeleaf configuration)
+2021-01-17 14:44:43.261  INFO 10312 --- [restartedMain] org.quartz.impl.StdSchedulerFactory      : Using default implementation for ThreadExecutor
+2021-01-17 14:44:43.270  INFO 10312 --- [restartedMain] org.quartz.core.SchedulerSignalerImpl    : Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+2021-01-17 14:44:43.270  INFO 10312 --- [restartedMain] org.quartz.core.QuartzScheduler          : Quartz Scheduler v.2.3.2 created.
+2021-01-17 14:44:43.271  INFO 10312 --- [restartedMain] org.quartz.simpl.RAMJobStore             : RAMJobStore initialized.
+2021-01-17 14:44:43.272  INFO 10312 --- [restartedMain] org.quartz.core.QuartzScheduler          : Scheduler meta-data: Quartz Scheduler (v2.3.2) 'quartzScheduler' with instanceId 'NON_CLUSTERED'
+  Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
+  NOT STARTED.
+  Currently in standby mode.
+  Number of jobs executed: 0
+  Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 10 threads.
+  Using job-store 'org.quartz.simpl.RAMJobStore' - which does not support persistence. and is not clustered.
+
+2021-01-17 14:44:43.272  INFO 10312 --- [restartedMain] org.quartz.impl.StdSchedulerFactory      : Quartz scheduler 'quartzScheduler' initialized from an externally provided properties instance.
+2021-01-17 14:44:43.272  INFO 10312 --- [restartedMain] org.quartz.impl.StdSchedulerFactory      : Quartz scheduler version: 2.3.2
+2021-01-17 14:44:43.272  INFO 10312 --- [restartedMain] org.quartz.core.QuartzScheduler          : JobFactory set to: org.springframework.scheduling.quartz.SpringBeanJobFactory@17b14d63
+2021-01-17 14:44:43.277  INFO 10312 --- [restartedMain] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService 'taskScheduler'
+2021-01-17 14:44:43.302  INFO 10312 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2021-01-17 14:44:43.335  INFO 10312 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2021-01-17 14:44:43.336  INFO 10312 --- [restartedMain] o.s.s.quartz.SchedulerFactoryBean        : Starting Quartz Scheduler now
+2021-01-17 14:44:43.337  INFO 10312 --- [restartedMain] org.quartz.core.QuartzScheduler          : Scheduler quartzScheduler_$_NON_CLUSTERED started.
+2021-01-17 14:44:43.348  INFO 10312 --- [restartedMain] c.e.wizardbot.WizardbotApplication       : Started WizardbotApplication in 3.027 seconds (JVM running for 5.398)
+2021-01-17 14:45:03.869  INFO 10312 --- [DefaultDispatcher-worker-3] c.example.wizardbot.service.BotService   : addGroup,添加成功
+2021-01-17 14:45:38.503  INFO 10312 --- [DefaultDispatcher-worker-1] c.example.wizardbot.service.BotService   : addGroup,添加成功
+2021-01-17 14:46:17.417  INFO 10312 --- [DefaultDispatcher-worker-5] c.example.wizardbot.service.BotService   : addGroup,已经存在的群号
+2021-01-17 14:46:32.152  INFO 10312 --- [DefaultDispatcher-worker-5] c.example.wizardbot.service.BotService   : news,获取缓存
+2021-01-17 14:46:40.100  INFO 10312 --- [DefaultDispatcher-worker-2] c.example.wizardbot.service.BotService   : weather,重新获取
+2021-01-17 14:46:47.361  INFO 10312 --- [DefaultDispatcher-worker-4] c.example.wizardbot.service.BotService   : weather,获取缓存
+2021-01-17 14:46:52.067  INFO 10312 --- [DefaultDispatcher-worker-4] c.example.wizardbot.service.BotService   : weather,重新获取
+2021-01-17 14:47:34.809  INFO 10312 --- [Thread-9] org.quartz.core.QuartzScheduler          : Scheduler quartzScheduler_$_NON_CLUSTERED paused.
+2021-01-17 14:47:36.350  INFO 10312 --- [Thread-9] o.s.s.c.ThreadPoolTaskScheduler          : Shutting down ExecutorService 'taskScheduler'
+2021-01-17 14:47:36.351  INFO 10312 --- [Thread-9] o.s.s.quartz.SchedulerFactoryBean        : Shutting down Quartz Scheduler
+2021-01-17 14:47:36.351  INFO 10312 --- [Thread-9] org.quartz.core.QuartzScheduler          : Scheduler quartzScheduler_$_NON_CLUSTERED shutting down.
+2021-01-17 14:47:36.351  INFO 10312 --- [Thread-9] org.quartz.core.QuartzScheduler          : Scheduler quartzScheduler_$_NON_CLUSTERED paused.
+2021-01-17 14:47:36.352  INFO 10312 --- [Thread-9] org.quartz.core.QuartzScheduler          : Scheduler quartzScheduler_$_NON_CLUSTERED shutdown complete.
+2021-01-17 14:47:36.353  INFO 10312 --- [Thread-9] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'
+2021-01-17 14:47:36.769  INFO 10312 --- [restartedMain] c.e.wizardbot.WizardbotApplication       : Starting WizardbotApplication using Java 1.8.0_221 on LAPTOP-ANEHFJAH with PID 10312 (E:\springbootproject\wizardbot\target\classes started by wangz in E:\springbootproject\wizardbot)
+2021-01-17 14:47:36.769  INFO 10312 --- [restartedMain] c.e.wizardbot.WizardbotApplication       : The following profiles are active: dev
+2021-01-17 14:47:36.949  INFO 10312 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2021-01-17 14:47:36.949  INFO 10312 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2021-01-17 14:47:36.954  INFO 10312 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 5 ms. Found 0 Redis repository interfaces.
+2021-01-17 14:47:37.079  INFO 10312 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2021-01-17 14:47:37.080  INFO 10312 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2021-01-17 14:47:37.080  INFO 10312 --- [restartedMain] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.41]
+2021-01-17 14:47:37.116  INFO 10312 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2021-01-17 14:47:37.116  INFO 10312 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 343 ms
+2021-01-17 14:47:37.167  INFO 10312 --- [restartedMain] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2021-01-17 14:47:37.190  WARN 10312 --- [restartedMain] ion$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates or check your Thymeleaf configuration)
+2021-01-17 14:47:37.213  INFO 10312 --- [restartedMain] org.quartz.impl.StdSchedulerFactory      : Using default implementation for ThreadExecutor
+2021-01-17 14:47:37.214  INFO 10312 --- [restartedMain] org.quartz.core.SchedulerSignalerImpl    : Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+2021-01-17 14:47:37.214  INFO 10312 --- [restartedMain] org.quartz.core.QuartzScheduler          : Quartz Scheduler v.2.3.2 created.
+2021-01-17 14:47:37.214  INFO 10312 --- [restartedMain] org.quartz.simpl.RAMJobStore             : RAMJobStore initialized.
+2021-01-17 14:47:37.214  INFO 10312 --- [restartedMain] org.quartz.core.QuartzScheduler          : Scheduler meta-data: Quartz Scheduler (v2.3.2) 'quartzScheduler' with instanceId 'NON_CLUSTERED'
+  Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
+  NOT STARTED.
+  Currently in standby mode.
+  Number of jobs executed: 0
+  Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 10 threads.
+  Using job-store 'org.quartz.simpl.RAMJobStore' - which does not support persistence. and is not clustered.
+
+2021-01-17 14:47:37.214  INFO 10312 --- [restartedMain] org.quartz.impl.StdSchedulerFactory      : Quartz scheduler 'quartzScheduler' initialized from an externally provided properties instance.
+2021-01-17 14:47:37.214  INFO 10312 --- [restartedMain] org.quartz.impl.StdSchedulerFactory      : Quartz scheduler version: 2.3.2
+2021-01-17 14:47:37.214  INFO 10312 --- [restartedMain] org.quartz.core.QuartzScheduler          : JobFactory set to: org.springframework.scheduling.quartz.SpringBeanJobFactory@7d0ef0d5
+2021-01-17 14:47:37.217  INFO 10312 --- [restartedMain] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService 'taskScheduler'
+2021-01-17 14:47:37.221  INFO 10312 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2021-01-17 14:47:37.230  INFO 10312 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2021-01-17 14:47:37.231  INFO 10312 --- [restartedMain] o.s.s.quartz.SchedulerFactoryBean        : Starting Quartz Scheduler now
+2021-01-17 14:47:37.231  INFO 10312 --- [restartedMain] org.quartz.core.QuartzScheduler          : Scheduler quartzScheduler_$_NON_CLUSTERED started.
+2021-01-17 14:47:37.236  INFO 10312 --- [restartedMain] c.e.wizardbot.WizardbotApplication       : Started WizardbotApplication in 0.502 seconds (JVM running for 179.286)
+2021-01-17 14:47:37.752  INFO 10312 --- [SpringContextShutdownHook] org.quartz.core.QuartzScheduler          : Scheduler quartzScheduler_$_NON_CLUSTERED paused.
+2021-01-17 14:48:39.650  INFO 9024 --- [restartedMain] c.e.wizardbot.WizardbotApplication       : Starting WizardbotApplication using Java 1.8.0_221 on LAPTOP-ANEHFJAH with PID 9024 (E:\springbootproject\wizardbot\target\classes started by wangz in E:\springbootproject\wizardbot)
+2021-01-17 14:48:39.653  INFO 9024 --- [restartedMain] c.e.wizardbot.WizardbotApplication       : The following profiles are active: dev
+2021-01-17 14:48:39.711  INFO 9024 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2021-01-17 14:48:39.712  INFO 9024 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2021-01-17 14:48:39.738  WARN 9024 --- [background-preinit] o.s.h.c.j.Jackson2ObjectMapperBuilder    : For Jackson Kotlin classes support please add "com.fasterxml.jackson.module:jackson-module-kotlin" to the classpath
+2021-01-17 14:48:40.288  INFO 9024 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2021-01-17 14:48:40.290  INFO 9024 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2021-01-17 14:48:40.316  INFO 9024 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 13 ms. Found 0 Redis repository interfaces.
+2021-01-17 14:48:40.867  INFO 9024 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2021-01-17 14:48:40.874  INFO 9024 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2021-01-17 14:48:40.875  INFO 9024 --- [restartedMain] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.41]
+2021-01-17 14:48:40.980  INFO 9024 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2021-01-17 14:48:40.980  INFO 9024 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1267 ms
+2021-01-17 14:48:41.426  INFO 9024 --- [restartedMain] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2021-01-17 14:48:41.599  WARN 9024 --- [restartedMain] ion$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates or check your Thymeleaf configuration)
+2021-01-17 14:48:41.711  INFO 9024 --- [restartedMain] org.quartz.impl.StdSchedulerFactory      : Using default implementation for ThreadExecutor
+2021-01-17 14:48:41.720  INFO 9024 --- [restartedMain] org.quartz.core.SchedulerSignalerImpl    : Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+2021-01-17 14:48:41.721  INFO 9024 --- [restartedMain] org.quartz.core.QuartzScheduler          : Quartz Scheduler v.2.3.2 created.
+2021-01-17 14:48:41.722  INFO 9024 --- [restartedMain] org.quartz.simpl.RAMJobStore             : RAMJobStore initialized.
+2021-01-17 14:48:41.722  INFO 9024 --- [restartedMain] org.quartz.core.QuartzScheduler          : Scheduler meta-data: Quartz Scheduler (v2.3.2) 'quartzScheduler' with instanceId 'NON_CLUSTERED'
+  Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
+  NOT STARTED.
+  Currently in standby mode.
+  Number of jobs executed: 0
+  Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 10 threads.
+  Using job-store 'org.quartz.simpl.RAMJobStore' - which does not support persistence. and is not clustered.
+
+2021-01-17 14:48:41.722  INFO 9024 --- [restartedMain] org.quartz.impl.StdSchedulerFactory      : Quartz scheduler 'quartzScheduler' initialized from an externally provided properties instance.
+2021-01-17 14:48:41.722  INFO 9024 --- [restartedMain] org.quartz.impl.StdSchedulerFactory      : Quartz scheduler version: 2.3.2
+2021-01-17 14:48:41.722  INFO 9024 --- [restartedMain] org.quartz.core.QuartzScheduler          : JobFactory set to: org.springframework.scheduling.quartz.SpringBeanJobFactory@6b14f153
+2021-01-17 14:48:41.727  INFO 9024 --- [restartedMain] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService 'taskScheduler'
+2021-01-17 14:48:41.749  INFO 9024 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2021-01-17 14:48:41.778  INFO 9024 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2021-01-17 14:48:41.780  INFO 9024 --- [restartedMain] o.s.s.quartz.SchedulerFactoryBean        : Starting Quartz Scheduler now
+2021-01-17 14:48:41.780  INFO 9024 --- [restartedMain] org.quartz.core.QuartzScheduler          : Scheduler quartzScheduler_$_NON_CLUSTERED started.
+2021-01-17 14:48:41.793  INFO 9024 --- [restartedMain] c.e.wizardbot.WizardbotApplication       : Started WizardbotApplication in 2.563 seconds (JVM running for 5.192)
+2021-01-17 14:48:50.373  INFO 9024 --- [scheduling-1] c.example.wizardbot.service.BotService   : sendMessage,success
+2021-01-17 14:48:50.373  INFO 9024 --- [scheduling-1] c.e.wizardbot.task.BotSchedulerTask      : success
+2021-01-17 14:49:00.307  INFO 9024 --- [scheduling-1] c.example.wizardbot.service.BotService   : sendMessage,success
+2021-01-17 14:49:00.307  INFO 9024 --- [scheduling-1] c.e.wizardbot.task.BotSchedulerTask      : success
+2021-01-17 14:49:10.320  INFO 9024 --- [scheduling-1] c.example.wizardbot.service.BotService   : sendMessage,success
+2021-01-17 14:49:10.320  INFO 9024 --- [scheduling-1] c.e.wizardbot.task.BotSchedulerTask      : success
+2021-01-17 14:49:20.337  INFO 9024 --- [scheduling-1] c.example.wizardbot.service.BotService   : sendMessage,success
+2021-01-17 14:49:20.338  INFO 9024 --- [scheduling-1] c.e.wizardbot.task.BotSchedulerTask      : success
+2021-01-17 14:49:30.319  INFO 9024 --- [scheduling-1] c.example.wizardbot.service.BotService   : sendMessage,success
+2021-01-17 14:49:30.320  INFO 9024 --- [scheduling-1] c.e.wizardbot.task.BotSchedulerTask      : success
+2021-01-17 14:49:40.322  INFO 9024 --- [scheduling-1] c.example.wizardbot.service.BotService   : sendMessage,success
+2021-01-17 14:49:40.322  INFO 9024 --- [scheduling-1] c.e.wizardbot.task.BotSchedulerTask      : success
+2021-01-17 14:49:40.379  INFO 9024 --- [SpringContextShutdownHook] org.quartz.core.QuartzScheduler          : Scheduler quartzScheduler_$_NON_CLUSTERED paused.
+2021-01-17 14:50:24.164  INFO 33712 --- [restartedMain] c.e.wizardbot.WizardbotApplication       : Starting WizardbotApplication using Java 1.8.0_221 on LAPTOP-ANEHFJAH with PID 33712 (E:\springbootproject\wizardbot\target\classes started by wangz in E:\springbootproject\wizardbot)
+2021-01-17 14:50:24.167  INFO 33712 --- [restartedMain] c.e.wizardbot.WizardbotApplication       : The following profiles are active: dev
+2021-01-17 14:50:24.220  INFO 33712 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2021-01-17 14:50:24.220  INFO 33712 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2021-01-17 14:50:24.229  WARN 33712 --- [background-preinit] o.s.h.c.j.Jackson2ObjectMapperBuilder    : For Jackson Kotlin classes support please add "com.fasterxml.jackson.module:jackson-module-kotlin" to the classpath
+2021-01-17 14:50:24.752  INFO 33712 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2021-01-17 14:50:24.754  INFO 33712 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2021-01-17 14:50:24.779  INFO 33712 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 13 ms. Found 0 Redis repository interfaces.
+2021-01-17 14:50:25.290  INFO 33712 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2021-01-17 14:50:25.299  INFO 33712 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2021-01-17 14:50:25.300  INFO 33712 --- [restartedMain] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.41]
+2021-01-17 14:50:25.415  INFO 33712 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2021-01-17 14:50:25.415  INFO 33712 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1194 ms
+2021-01-17 14:50:25.819  INFO 33712 --- [restartedMain] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2021-01-17 14:50:25.986  WARN 33712 --- [restartedMain] ion$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates or check your Thymeleaf configuration)
+2021-01-17 14:50:26.094  INFO 33712 --- [restartedMain] org.quartz.impl.StdSchedulerFactory      : Using default implementation for ThreadExecutor
+2021-01-17 14:50:26.104  INFO 33712 --- [restartedMain] org.quartz.core.SchedulerSignalerImpl    : Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+2021-01-17 14:50:26.104  INFO 33712 --- [restartedMain] org.quartz.core.QuartzScheduler          : Quartz Scheduler v.2.3.2 created.
+2021-01-17 14:50:26.104  INFO 33712 --- [restartedMain] org.quartz.simpl.RAMJobStore             : RAMJobStore initialized.
+2021-01-17 14:50:26.105  INFO 33712 --- [restartedMain] org.quartz.core.QuartzScheduler          : Scheduler meta-data: Quartz Scheduler (v2.3.2) 'quartzScheduler' with instanceId 'NON_CLUSTERED'
+  Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
+  NOT STARTED.
+  Currently in standby mode.
+  Number of jobs executed: 0
+  Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 10 threads.
+  Using job-store 'org.quartz.simpl.RAMJobStore' - which does not support persistence. and is not clustered.
+
+2021-01-17 14:50:26.105  INFO 33712 --- [restartedMain] org.quartz.impl.StdSchedulerFactory      : Quartz scheduler 'quartzScheduler' initialized from an externally provided properties instance.
+2021-01-17 14:50:26.105  INFO 33712 --- [restartedMain] org.quartz.impl.StdSchedulerFactory      : Quartz scheduler version: 2.3.2
+2021-01-17 14:50:26.105  INFO 33712 --- [restartedMain] org.quartz.core.QuartzScheduler          : JobFactory set to: org.springframework.scheduling.quartz.SpringBeanJobFactory@37033463
+2021-01-17 14:50:26.109  INFO 33712 --- [restartedMain] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService 'taskScheduler'
+2021-01-17 14:50:26.134  INFO 33712 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2021-01-17 14:50:26.163  INFO 33712 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2021-01-17 14:50:26.165  INFO 33712 --- [restartedMain] o.s.s.quartz.SchedulerFactoryBean        : Starting Quartz Scheduler now
+2021-01-17 14:50:26.165  INFO 33712 --- [restartedMain] org.quartz.core.QuartzScheduler          : Scheduler quartzScheduler_$_NON_CLUSTERED started.
+2021-01-17 14:50:26.177  INFO 33712 --- [restartedMain] c.e.wizardbot.WizardbotApplication       : Started WizardbotApplication in 2.479 seconds (JVM running for 4.796)
+2021-01-17 14:50:33.164  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : autoSendNews,bot0000004,已经发过了
+2021-01-17 14:50:33.164  INFO 33712 --- [scheduling-1] c.e.wizardbot.task.BotSchedulerTask      : bot0000004,已经发过了
+2021-01-17 14:50:40.053  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : autoSendNews,bot0000004,已经发过了
+2021-01-17 14:50:40.053  INFO 33712 --- [scheduling-1] c.e.wizardbot.task.BotSchedulerTask      : bot0000004,已经发过了
+2021-01-17 14:50:50.047  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : autoSendNews,bot0000004,已经发过了
+2021-01-17 14:50:50.047  INFO 33712 --- [scheduling-1] c.e.wizardbot.task.BotSchedulerTask      : bot0000004,已经发过了
+2021-01-17 14:51:00.059  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : autoSendNews,bot0000004,已经发过了
+2021-01-17 14:51:00.060  INFO 33712 --- [scheduling-1] c.e.wizardbot.task.BotSchedulerTask      : bot0000004,已经发过了
+2021-01-17 14:51:10.046  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : autoSendNews,bot0000004,已经发过了
+2021-01-17 14:51:10.047  INFO 33712 --- [scheduling-1] c.e.wizardbot.task.BotSchedulerTask      : bot0000004,已经发过了
+2021-01-17 14:51:20.046  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : autoSendNews,bot0000004,已经发过了
+2021-01-17 14:51:20.046  INFO 33712 --- [scheduling-1] c.e.wizardbot.task.BotSchedulerTask      : bot0000004,已经发过了
+2021-01-17 14:51:30.046  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : autoSendNews,开始新闻推送
+2021-01-17 14:51:30.092  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : news,获取缓存
+2021-01-17 14:51:30.892  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : autoSendNews,success
+2021-01-17 14:51:30.892  INFO 33712 --- [scheduling-1] c.e.wizardbot.task.BotSchedulerTask      : success
+2021-01-17 14:51:40.048  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : autoSendNews,bot0000004,已经发过了
+2021-01-17 14:51:40.049  INFO 33712 --- [scheduling-1] c.e.wizardbot.task.BotSchedulerTask      : bot0000004,已经发过了
+2021-01-17 14:51:50.042  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : autoSendNews,bot0000004,已经发过了
+2021-01-17 14:51:50.043  INFO 33712 --- [scheduling-1] c.e.wizardbot.task.BotSchedulerTask      : bot0000004,已经发过了
+2021-01-17 14:52:00.364  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : autoSendNews,bot0000004,已经发过了
+2021-01-17 14:52:00.365  INFO 33712 --- [scheduling-1] c.e.wizardbot.task.BotSchedulerTask      : bot0000004,已经发过了
+2021-01-17 14:52:10.256  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : autoSendNews,bot0000004,已经发过了
+2021-01-17 14:52:10.256  INFO 33712 --- [scheduling-1] c.e.wizardbot.task.BotSchedulerTask      : bot0000004,已经发过了
+2021-01-17 14:52:20.045  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : autoSendNews,bot0000004,已经发过了
+2021-01-17 14:52:20.045  INFO 33712 --- [scheduling-1] c.e.wizardbot.task.BotSchedulerTask      : bot0000004,已经发过了
+2021-01-17 14:52:30.052  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : autoSendNews,bot0000004,已经发过了
+2021-01-17 14:52:30.053  INFO 33712 --- [scheduling-1] c.e.wizardbot.task.BotSchedulerTask      : bot0000004,已经发过了
+2021-01-17 14:52:40.048  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : autoSendNews,开始新闻推送
+2021-01-17 14:52:40.087  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : news,重新获取
+2021-01-17 14:52:42.233  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : news,网络异常
+2021-01-17 14:52:42.236  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : autoSendNews,bot0000002,网络异常
+2021-01-17 14:52:42.236  INFO 33712 --- [scheduling-1] c.e.wizardbot.task.BotSchedulerTask      : bot0000002,网络异常
+2021-01-17 14:52:50.046  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : autoSendNews,开始新闻推送
+2021-01-17 14:52:50.087  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : news,重新获取
+2021-01-17 14:52:52.149  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : news,网络异常
+2021-01-17 14:52:52.150  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : autoSendNews,bot0000002,网络异常
+2021-01-17 14:52:52.151  INFO 33712 --- [scheduling-1] c.e.wizardbot.task.BotSchedulerTask      : bot0000002,网络异常
+2021-01-17 14:53:00.047  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : autoSendNews,开始新闻推送
+2021-01-17 14:53:00.086  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : news,重新获取
+2021-01-17 14:53:02.119  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : news,网络异常
+2021-01-17 14:53:02.119  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : autoSendNews,bot0000002,网络异常
+2021-01-17 14:53:02.120  INFO 33712 --- [scheduling-1] c.e.wizardbot.task.BotSchedulerTask      : bot0000002,网络异常
+2021-01-17 14:53:10.052  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : autoSendNews,开始新闻推送
+2021-01-17 14:53:10.092  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : news,重新获取
+2021-01-17 14:53:12.130  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : news,网络异常
+2021-01-17 14:53:12.131  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : autoSendNews,bot0000002,网络异常
+2021-01-17 14:53:12.131  INFO 33712 --- [scheduling-1] c.e.wizardbot.task.BotSchedulerTask      : bot0000002,网络异常
+2021-01-17 14:53:20.044  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : autoSendNews,开始新闻推送
+2021-01-17 14:53:20.086  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : news,重新获取
+2021-01-17 14:53:22.128  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : news,网络异常
+2021-01-17 14:53:22.129  INFO 33712 --- [scheduling-1] c.example.wizardbot.service.BotService   : autoSendNews,bot0000002,网络异常
+2021-01-17 14:53:22.129  INFO 33712 --- [scheduling-1] c.e.wizardbot.task.BotSchedulerTask      : bot0000002,网络异常
+2021-01-17 14:53:24.209  INFO 33712 --- [SpringContextShutdownHook] org.quartz.core.QuartzScheduler          : Scheduler quartzScheduler_$_NON_CLUSTERED paused.
+2021-01-17 14:53:59.716  INFO 8408 --- [restartedMain] c.e.wizardbot.WizardbotApplication       : Starting WizardbotApplication using Java 1.8.0_221 on LAPTOP-ANEHFJAH with PID 8408 (E:\springbootproject\wizardbot\target\classes started by wangz in E:\springbootproject\wizardbot)
+2021-01-17 14:53:59.719  INFO 8408 --- [restartedMain] c.e.wizardbot.WizardbotApplication       : The following profiles are active: dev
+2021-01-17 14:53:59.777  INFO 8408 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2021-01-17 14:53:59.777  INFO 8408 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2021-01-17 14:53:59.789  WARN 8408 --- [background-preinit] o.s.h.c.j.Jackson2ObjectMapperBuilder    : For Jackson Kotlin classes support please add "com.fasterxml.jackson.module:jackson-module-kotlin" to the classpath
+2021-01-17 14:54:00.368  INFO 8408 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2021-01-17 14:54:00.370  INFO 8408 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2021-01-17 14:54:00.396  INFO 8408 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 13 ms. Found 0 Redis repository interfaces.
+2021-01-17 14:54:00.897  INFO 8408 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2021-01-17 14:54:00.904  INFO 8408 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2021-01-17 14:54:00.904  INFO 8408 --- [restartedMain] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.41]
+2021-01-17 14:54:01.022  INFO 8408 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2021-01-17 14:54:01.023  INFO 8408 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1244 ms
+2021-01-17 14:54:01.425  INFO 8408 --- [restartedMain] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2021-01-17 14:54:01.582  WARN 8408 --- [restartedMain] ion$DefaultTemplateResolverConfiguration : Cannot find template location: classpath:/templates/ (please add some templates or check your Thymeleaf configuration)
+2021-01-17 14:54:01.693  INFO 8408 --- [restartedMain] org.quartz.impl.StdSchedulerFactory      : Using default implementation for ThreadExecutor
+2021-01-17 14:54:01.702  INFO 8408 --- [restartedMain] org.quartz.core.SchedulerSignalerImpl    : Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+2021-01-17 14:54:01.702  INFO 8408 --- [restartedMain] org.quartz.core.QuartzScheduler          : Quartz Scheduler v.2.3.2 created.
+2021-01-17 14:54:01.703  INFO 8408 --- [restartedMain] org.quartz.simpl.RAMJobStore             : RAMJobStore initialized.
+2021-01-17 14:54:01.703  INFO 8408 --- [restartedMain] org.quartz.core.QuartzScheduler          : Scheduler meta-data: Quartz Scheduler (v2.3.2) 'quartzScheduler' with instanceId 'NON_CLUSTERED'
+  Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
+  NOT STARTED.
+  Currently in standby mode.
+  Number of jobs executed: 0
+  Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 10 threads.
+  Using job-store 'org.quartz.simpl.RAMJobStore' - which does not support persistence. and is not clustered.
+
+2021-01-17 14:54:01.704  INFO 8408 --- [restartedMain] org.quartz.impl.StdSchedulerFactory      : Quartz scheduler 'quartzScheduler' initialized from an externally provided properties instance.
+2021-01-17 14:54:01.704  INFO 8408 --- [restartedMain] org.quartz.impl.StdSchedulerFactory      : Quartz scheduler version: 2.3.2
+2021-01-17 14:54:01.704  INFO 8408 --- [restartedMain] org.quartz.core.QuartzScheduler          : JobFactory set to: org.springframework.scheduling.quartz.SpringBeanJobFactory@2e149841
+2021-01-17 14:54:01.708  INFO 8408 --- [restartedMain] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService 'taskScheduler'
+2021-01-17 14:54:01.729  INFO 8408 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2021-01-17 14:54:01.758  INFO 8408 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2021-01-17 14:54:01.759  INFO 8408 --- [restartedMain] o.s.s.quartz.SchedulerFactoryBean        : Starting Quartz Scheduler now
+2021-01-17 14:54:01.760  INFO 8408 --- [restartedMain] org.quartz.core.QuartzScheduler          : Scheduler quartzScheduler_$_NON_CLUSTERED started.
+2021-01-17 14:54:01.770  INFO 8408 --- [restartedMain] c.e.wizardbot.WizardbotApplication       : Started WizardbotApplication in 2.551 seconds (JVM running for 4.897)
+2021-01-17 14:54:12.662  INFO 8408 --- [scheduling-1] c.example.wizardbot.service.BotService   : autoSendNews,开始新闻推送
+2021-01-17 14:54:12.705  INFO 8408 --- [scheduling-1] c.example.wizardbot.service.BotService   : news,重新获取
+2021-01-17 14:54:15.770  INFO 8408 --- [scheduling-1] c.example.wizardbot.service.BotService   : autoSendNews,success
+2021-01-17 14:54:15.770  INFO 8408 --- [scheduling-1] c.e.wizardbot.task.BotSchedulerTask      : success
+2021-01-17 14:54:20.051  INFO 8408 --- [scheduling-1] c.example.wizardbot.service.BotService   : autoSendNews,bot0000004,已经发过了
+2021-01-17 14:54:20.052  INFO 8408 --- [scheduling-1] c.e.wizardbot.task.BotSchedulerTask      : bot0000004,已经发过了
+2021-01-17 14:54:30.048  INFO 8408 --- [scheduling-1] c.example.wizardbot.service.BotService   : autoSendNews,bot0000004,已经发过了
+2021-01-17 14:54:30.048  INFO 8408 --- [scheduling-1] c.e.wizardbot.task.BotSchedulerTask      : bot0000004,已经发过了
+2021-01-17 14:54:40.047  INFO 8408 --- [scheduling-1] c.example.wizardbot.service.BotService   : autoSendNews,bot0000004,已经发过了
+2021-01-17 14:54:40.047  INFO 8408 --- [scheduling-1] c.e.wizardbot.task.BotSchedulerTask      : bot0000004,已经发过了
+2021-01-17 14:54:47.534  INFO 8408 --- [SpringContextShutdownHook] org.quartz.core.QuartzScheduler          : Scheduler quartzScheduler_$_NON_CLUSTERED paused.
