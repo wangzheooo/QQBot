@@ -29,6 +29,8 @@ public class Global {
     //机器人对象
     private Bot wizardBot;
 
+    private String menu="1.发送,开启每日简讯推送\n2.发送,石原里美你好\n3.发送,新闻\n4.发送,吃饭推荐\n5.发送,生存天数19951212\n6.发送,淄博天气\n7.发送,石原里美功能介绍\n";
+
     private String[] foods = {"馄饨",
             "拉面",
             "热干面",

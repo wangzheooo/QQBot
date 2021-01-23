@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * @Auther: auther
  * @Date: 2021/1/14 19:50
- * @Description:
+ * @Description:基本没用,要什么controller,这可是机器人,直接跟他聊天就行了
  */
 
 @RestController
@@ -26,7 +26,7 @@ public class BotController {
 
     @GetMapping("/sendMessage")
     public String sendMessage(String groupId, String content) {
-        return botService.sendMessage(groupId, content);
+        return botService.sendGroupMessage(groupId, content);
     }
 
 }
