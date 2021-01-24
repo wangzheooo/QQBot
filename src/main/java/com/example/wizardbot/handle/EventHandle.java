@@ -33,9 +33,6 @@ public class EventHandle extends SimpleListenerHost {
     @Autowired
     private BotService botService;
 
-    private String messageTemp;//临时消息
-    private Long groupId;//临时群号
-
     @EventHandler()
     public ListeningStatus onBotGroupRequest(BotInvitedJoinGroupRequestEvent event) {
         //收到邀请自动加入
@@ -47,7 +44,7 @@ public class EventHandle extends SimpleListenerHost {
     @EventHandler
     public void getGroupMessageEvent(@NotNull GroupMessageEvent event) throws Exception {
         MessageChain message = event.getMessage();
-        messageTemp = "";
+        String messageTemp = "";
 
         //因为只要文字信息,所以接收的群信息里,除了文字都过滤掉了
         for (int i = 0; i < message.size(); i++) {
@@ -59,7 +56,7 @@ public class EventHandle extends SimpleListenerHost {
 //        System.out.println(event.getMessage().contentToString());
 
         if (messageTemp.equals("开启每日简讯推送")) {
-            groupId = event.getSubject().getId();
+            Long groupId = event.getSubject().getId();
             if (botService.addGroup(groupId)) {
                 event.getSubject().sendMessage(new PlainText("每日简讯推送开启成功!"));
             } else {
@@ -68,7 +65,12 @@ public class EventHandle extends SimpleListenerHost {
         } else if (messageTemp.equals("石原里美你好")) {
             event.getSubject().sendMessage(new PlainText(event.getSenderName() + "你好呀"));
         } else if (messageTemp.equals("新闻")) {
-            botService.sendGroupImage("" + event.getGroup().getId(), botService.getNews());
+            String news = botService.getNews();
+            if (news.indexOf("bot000000") == -1) {
+                botService.sendGroupImage("" + event.getGroup().getId(), news);
+            } else {
+                event.getSubject().sendMessage(new PlainText(news));
+            }
         } else if (messageTemp.equals("吃饭推荐")) {
             event.getSubject().sendMessage(new PlainText(global.getFoods()[Tool.get_random(0, global.getFoods().length)]));
         } else if (messageTemp.equals("石原里美功能介绍")) {
@@ -88,6 +90,7 @@ public class EventHandle extends SimpleListenerHost {
                 }
             }
         }
+
     }
 
     @NotNull
