@@ -1,5 +1,6 @@
 package com.example.wizardbot.task;
 
+import com.example.wizardbot.contants.Global;
 import com.example.wizardbot.service.BotService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,9 @@ public class BotSchedulerTask {
     private static final Logger logger = LoggerFactory.getLogger(BotSchedulerTask.class);
 
     @Autowired
+    private Global global;
+
+    @Autowired
     private BotService botService;
 
 //    @Scheduled(cron = "*/10 * * * * ?")
@@ -27,31 +31,31 @@ public class BotSchedulerTask {
 
     @Scheduled(cron = "0 0 8 * * ?")
     private void newsTask1() {
-        logger.info(botService.autoSendNews());
+        global.getExecutor().execute(() -> logger.info(botService.autoSendNews()));
     }
 
     @Scheduled(cron = "0 1 8 * * ?")
     private void newsTask2() {
-        logger.info(botService.autoSendNews());
+        global.getExecutor().execute(() -> logger.info(botService.autoSendNews()));
     }
 
     @Scheduled(cron = "0 15 8 * * ?")
     private void newsTask3() {
-        logger.info(botService.autoSendNews());
+        global.getExecutor().execute(() -> logger.info(botService.autoSendNews()));
     }
 
     @Scheduled(cron = "0 16 8 * * ?")
     private void newsTask4() {
-        logger.info(botService.autoSendNews());
+        global.getExecutor().execute(() -> logger.info(botService.autoSendNews()));
     }
 
     @Scheduled(cron = "0 30 8 * * ?")
     private void newsTask5() {
-        logger.info(botService.autoSendNews());
+        global.getExecutor().execute(() -> logger.info(botService.autoSendNews()));
     }
 
     @Scheduled(cron = "0 31 8 * * ?")
     private void newsTask6() {
-        logger.info(botService.autoSendNews());
+        global.getExecutor().execute(() -> logger.info(botService.autoSendNews()));
     }
 }

@@ -33,11 +33,11 @@ public class EventHandle extends SimpleListenerHost {
 
     @EventHandler()
     public ListeningStatus onNewFriendRequest(NewFriendRequestEvent event) {
-        String fromNick=event.getMessage();
-        if(fromNick.equals("1233211234567")){
+        String fromNick = event.getMessage();
+        if (fromNick.equals("1233211234567")) {
             event.accept();
-            logger.info("添加好友"+event.getFromId());
-        }else {
+            logger.info("添加好友" + event.getFromId());
+        } else {
             logger.info("添加好友失败,暗号没对上");
         }
         return ListeningStatus.LISTENING;
@@ -46,27 +46,27 @@ public class EventHandle extends SimpleListenerHost {
     @EventHandler()
     public ListeningStatus onBotInvitedJoinGroupRequest(BotInvitedJoinGroupRequestEvent event) {
         event.accept();
-        logger.info("被拉入群"+event.getGroupId());
+        logger.info("被拉入群" + event.getGroupId());
         return ListeningStatus.LISTENING;
     }
 
     @EventHandler()
     public ListeningStatus onBotJoinGroup(BotJoinGroupEvent event) {
         event.getGroup().sendMessage(new PlainText(global.getMenu()));
-        logger.info("首次进群功能介绍"+event.getGroup().getId());
+        logger.info("首次进群功能介绍" + event.getGroup().getId());
         return ListeningStatus.LISTENING;
     }
 
     @EventHandler()
     public ListeningStatus onFriendMessage(FriendMessageEvent event) {
         event.getFriend().sendMessage(new PlainText("只支持群聊"));
-        logger.info("收到好友消息"+event.getFriend().getId());
+        logger.info("收到好友消息" + event.getFriend().getId());
         return ListeningStatus.LISTENING;
     }
 
     @NotNull
     @EventHandler
-    public void getGroupMessage(@NotNull GroupMessageEvent event) throws Exception {
+    public ListeningStatus getGroupMessage(@NotNull GroupMessageEvent event) throws Exception {
         MessageChain message = event.getMessage();
         String messageTemp = "";
 
@@ -81,47 +81,70 @@ public class EventHandle extends SimpleListenerHost {
 
         if (messageTemp.equals("开启每日简讯推送")) {
             Long groupId = event.getSubject().getId();
-            if (botService.addGroup(groupId)) {
-                event.getSubject().sendMessage(new PlainText("每日简讯推送开启成功!"));
-            } else {
-                event.getSubject().sendMessage(new PlainText("已经开启了,不要重复开启!"));
-            }
+            global.getExecutor().execute(() -> {
+                if (botService.addGroup(groupId)) {
+                    botService.sendGroupMessage("" + groupId, "每日简讯推送开启成功");
+                } else {
+                    botService.sendGroupMessage("" + groupId, "已经开启了,不要重复开启");
+                }
+            });
+            return ListeningStatus.LISTENING;
         } else if (messageTemp.equals("关闭每日简讯推送")) {
             Long groupId = event.getSubject().getId();
-            if (botService.delGroup(groupId)) {
-                event.getSubject().sendMessage(new PlainText("每日简讯推送已关闭"));
-            } else {
-                event.getSubject().sendMessage(new PlainText("不存在的群号"));
-            }
+            global.getExecutor().execute(() -> {
+                if (botService.delGroup(groupId)) {
+                    botService.sendGroupMessage("" + groupId, "每日简讯推送已关闭");
+                } else {
+                    botService.sendGroupMessage("" + groupId, "不存在的群号");
+                }
+            });
+            return ListeningStatus.LISTENING;
         } else if (messageTemp.equals("石原里美你好")) {
             event.getSubject().sendMessage(new PlainText(event.getSenderName() + "你好呀"));
+            return ListeningStatus.LISTENING;
         } else if (messageTemp.equals("新闻")) {
-            String news = botService.getNews();
-            if (news.indexOf("bot000000") == -1) {
-                botService.sendGroupImage("" + event.getGroup().getId(), news);
-            } else {
-                event.getSubject().sendMessage(new PlainText(news));
-            }
+            Long groupId = event.getSubject().getId();
+            global.getExecutor().execute(() -> {
+                String news = botService.getNews();
+                if (news.indexOf("bot000000") == -1) {
+                    botService.sendGroupImage("" + groupId, news);
+                } else {
+                    botService.sendGroupMessage("" + groupId, news);
+                }
+            });
+            return ListeningStatus.LISTENING;
         } else if (messageTemp.equals("吃饭推荐")) {
             event.getSubject().sendMessage(new PlainText(global.getFoods()[Tool.get_random(0, global.getFoods().length)]));
+            return ListeningStatus.LISTENING;
         } else if (messageTemp.equals("石原里美功能介绍")) {
             event.getSubject().sendMessage(new PlainText(global.getMenu()));
+            return ListeningStatus.LISTENING;
         } else if (messageTemp.indexOf("生存天数") != -1) {
             //例子:生存天数19951111
-            if (messageTemp.length() == 12) {
-                event.getSubject().sendMessage(new PlainText(botService.getSurvivalDays(messageTemp)));
-            }
-        } else if (messageTemp.indexOf("天气") != -1) {
-            if (messageTemp.length() >= 4 && messageTemp.length() < 10) {
-                String[] weatherContent = messageTemp.split("天气");
-                try {
-                    event.getSubject().sendMessage(new PlainText(botService.weather("" + weatherContent[0])));
-                } catch (Exception e) {
-                    e.printStackTrace();
+            Long groupId = event.getSubject().getId();
+            String finalMessageTemp = messageTemp;
+            global.getExecutor().execute(() -> {
+                if (finalMessageTemp.length() == 12) {
+                    botService.sendGroupMessage("" + groupId, botService.getSurvivalDays(finalMessageTemp));
                 }
-            }
+            });
+            return ListeningStatus.LISTENING;
+        } else if (messageTemp.indexOf("天气") != -1) {
+            Long groupId = event.getSubject().getId();
+            String finalMessageTemp = messageTemp;
+            global.getExecutor().execute(() -> {
+                if (finalMessageTemp.length() >= 4 && finalMessageTemp.length() < 10) {
+                    String[] weatherContent = finalMessageTemp.split("天气");
+                    try {
+                        botService.sendGroupMessage("" + groupId, botService.weather("" + weatherContent[0]));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            return ListeningStatus.LISTENING;
         }
-
+        return ListeningStatus.LISTENING;
     }
 
     @NotNull

@@ -5,6 +5,9 @@ import net.mamoe.mirai.Bot;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 /**
  * @Auther: auther
  * @Date: 2021/1/17 11:26
@@ -28,6 +31,9 @@ public class Global {
 
     //机器人对象
     private Bot wizardBot;
+
+    //线程池
+    ExecutorService executor = Executors.newCachedThreadPool();
 
     private String menu="1.发送,石原里美功能介绍\n2.发送,开启每日简讯推送\n3.发送,关闭每日简讯推送\n4.发送,石原里美你好\n5.发送,新闻\n6.发送,吃饭推荐\n7.发送,生存天数19951212\n8.发送,淄博天气\n";
 
