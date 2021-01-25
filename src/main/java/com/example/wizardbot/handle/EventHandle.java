@@ -7,9 +7,7 @@ import kotlin.coroutines.CoroutineContext;
 import net.mamoe.mirai.event.EventHandler;
 import net.mamoe.mirai.event.ListeningStatus;
 import net.mamoe.mirai.event.SimpleListenerHost;
-import net.mamoe.mirai.event.events.BotInvitedJoinGroupRequestEvent;
-import net.mamoe.mirai.event.events.BotOfflineEvent;
-import net.mamoe.mirai.event.events.GroupMessageEvent;
+import net.mamoe.mirai.event.events.*;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.PlainText;
 import org.jetbrains.annotations.NotNull;
@@ -34,15 +32,41 @@ public class EventHandle extends SimpleListenerHost {
     private BotService botService;
 
     @EventHandler()
-    public ListeningStatus onBotGroupRequest(BotInvitedJoinGroupRequestEvent event) {
-        //收到邀请自动加入
+    public ListeningStatus onNewFriendRequest(NewFriendRequestEvent event) {
+        String fromNick=event.getMessage();
+        if(fromNick.equals("1233211234567")){
+            event.accept();
+            logger.info("添加好友"+event.getFromId());
+        }else {
+            logger.info("添加好友失败,暗号没对上");
+        }
+        return ListeningStatus.LISTENING;
+    }
+
+    @EventHandler()
+    public ListeningStatus onBotInvitedJoinGroupRequest(BotInvitedJoinGroupRequestEvent event) {
         event.accept();
+        logger.info("被拉入群"+event.getGroupId());
+        return ListeningStatus.LISTENING;
+    }
+
+    @EventHandler()
+    public ListeningStatus onBotJoinGroup(BotJoinGroupEvent event) {
+        event.getGroup().sendMessage(new PlainText(global.getMenu()));
+        logger.info("首次进群功能介绍"+event.getGroup().getId());
+        return ListeningStatus.LISTENING;
+    }
+
+    @EventHandler()
+    public ListeningStatus onFriendMessage(FriendMessageEvent event) {
+        event.getFriend().sendMessage(new PlainText("只支持群聊"));
+        logger.info("收到好友消息"+event.getFriend().getId());
         return ListeningStatus.LISTENING;
     }
 
     @NotNull
     @EventHandler
-    public void getGroupMessageEvent(@NotNull GroupMessageEvent event) throws Exception {
+    public void getGroupMessage(@NotNull GroupMessageEvent event) throws Exception {
         MessageChain message = event.getMessage();
         String messageTemp = "";
 
@@ -102,8 +126,14 @@ public class EventHandle extends SimpleListenerHost {
 
     @NotNull
     @EventHandler
-    public void getBotOfflineEvent(@NotNull BotOfflineEvent event) throws Exception {
+    public void getBotOffline(@NotNull BotOfflineEvent event) throws Exception {
         logger.error("我掉了");
+    }
+
+    @NotNull
+    @EventHandler
+    public void getBotOffline(@NotNull BotReloginEvent event) throws Exception {
+        logger.error("我重新登录");
     }
 
     @Override
