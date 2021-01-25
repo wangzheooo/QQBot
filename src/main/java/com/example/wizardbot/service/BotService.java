@@ -112,12 +112,15 @@ public class BotService {
     public boolean delGroup(Long groupId) {
         String groupStr = (String) redisUtils.get("groupNewsList");
         if (groupStr == null || groupStr == "" || groupStr.equals("")) {
-            return true;
+            logger.info("delGroup,删除失败,群号不存在");
+            return false;
         } else {
             String[] groupNewsList = groupStr.split(",");
             String groupStrResult = "";
+            boolean flag = false;
             for (int i = 0; i < groupNewsList.length; i++) {
                 if (groupId == (Long.parseLong(groupNewsList[i]))) {
+                    flag = true;
                     continue;
                 }
                 if (groupStrResult == "") {
@@ -126,9 +129,15 @@ public class BotService {
                     groupStrResult += "," + groupId;
                 }
             }
-            redisUtils.set("groupNewsList", groupStr);
+            if (flag) {
+                redisUtils.set("groupNewsList", groupStr);
+                logger.info("delGroup,删除成功");
+                return true;
+            } else {
+                logger.info("delGroup,删除失败,群号不存在");
+                return false;
+            }
         }
-        return true;
     }
 
     public String sendGroupMessage(String groupId, String content) {

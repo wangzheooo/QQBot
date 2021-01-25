@@ -62,6 +62,13 @@ public class EventHandle extends SimpleListenerHost {
             } else {
                 event.getSubject().sendMessage(new PlainText("已经开启了,不要重复开启!"));
             }
+        } else if (messageTemp.equals("关闭每日简讯推送")) {
+            Long groupId = event.getSubject().getId();
+            if (botService.delGroup(groupId)) {
+                event.getSubject().sendMessage(new PlainText("每日简讯推送已关闭"));
+            } else {
+                event.getSubject().sendMessage(new PlainText("不存在的群号"));
+            }
         } else if (messageTemp.equals("石原里美你好")) {
             event.getSubject().sendMessage(new PlainText(event.getSenderName() + "你好呀"));
         } else if (messageTemp.equals("新闻")) {
