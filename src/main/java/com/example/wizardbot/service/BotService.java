@@ -422,8 +422,8 @@ public class BotService {
         String waterMarkContent = "老刘星什么时候结婚";
         g.drawImage(image, 0, 0, width, height, null);
         g.setColor(new Color(169, 169, 169)); //设置水印颜色
-        g.setFont(new Font("华文琥珀", Font.ITALIC, 32));              //设置字体
-        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.3f));//设置水印文字透明度
+        g.setFont(new Font("华文琥珀", Font.ITALIC, 34));              //设置字体
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.4f));//设置水印文字透明度
         g.rotate(Math.toRadians(45));//设置水印旋转
 
         JLabel label = new JLabel(waterMarkContent);
