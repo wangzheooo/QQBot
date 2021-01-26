@@ -5,7 +5,6 @@ import com.example.wizardbot.service.BotService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -24,9 +23,9 @@ public class BotController {
     @Autowired
     private BotService botService;
 
-    @GetMapping("/sendMessage")
-    public String sendMessage(String groupId, String content) {
-        return botService.sendGroupMessage(groupId, content);
-    }
+//    @GetMapping("/sendMessage")
+//    public String sendMessage(String groupId, String content) {
+//        return botService.sendGroupMessage(groupId, content);
+//    }
 
 }

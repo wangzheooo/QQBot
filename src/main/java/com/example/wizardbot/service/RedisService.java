@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
  * @Description:
  */
 @Service
-public class RedisUtils {
+public class RedisService {
     @Autowired
     private RedisTemplate redisTemplate;
     private static double size = Math.pow(2, 32);

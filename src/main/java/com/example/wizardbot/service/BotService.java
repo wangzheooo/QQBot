@@ -2,7 +2,8 @@ package com.example.wizardbot.service;
 
 import com.alibaba.fastjson.JSON;
 import com.example.wizardbot.contants.Global;
-import com.example.wizardbot.utils.Tool;
+import com.example.wizardbot.utils.BotUtils;
+import net.mamoe.mirai.message.MessageReceipt;
 import net.mamoe.mirai.message.data.PlainText;
 import net.mamoe.mirai.utils.ExternalResource;
 import okhttp3.OkHttpClient;
@@ -15,38 +16,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import sun.misc.BASE64Encoder;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.SocketAddress;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
 
 /**
  * @Auther: auther
  * @Date: 2021/1/17 11:23
  * @Description:
- */
-
-/**
- * bot0000001:不存在的地区
- * bot0000002:网络异常
- * bot0000003:今天没有新闻
- * bot0000004:已经发过了
- * bot0000005:没有绑定群
- * bot0000006:IO异常
- * bot0000007:发送群图片失败
- * bot0000008:日期异常
  */
 @Service
 public class BotService {
@@ -56,7 +41,7 @@ public class BotService {
     Global global;
 
     @Autowired
-    private RedisUtils redisUtils;
+    private RedisService redisService;
 
     private static final Base64.Decoder decoder = Base64.getDecoder();
 
@@ -67,28 +52,21 @@ public class BotService {
     //天气缓存时间,5分钟,1000*60*5
     int botWeatherCache = 1000 * 60 * 5;
 
-    //图片属性
-    int line = 40;//行高
-    int lingTextNum = 18;//每行字数
-
     public String[] getGroupNewsList() {
         //群号缓存
-        String groupStr = (String) redisUtils.get("groupNewsList");
-
+        String groupStr = (String) redisService.get("groupNewsList");
         if (groupStr == null || groupStr == "" || groupStr.equals("")) {
             return null;
         }
-
         //群号数组
         String[] groupNewsList = groupStr.split(",");
-
         return groupNewsList;
     }
 
     public boolean addGroup(Long groupId) {
-        String groupStr = (String) redisUtils.get("groupNewsList");
+        String groupStr = (String) redisService.get("groupNewsList");
         if (groupStr == null || groupStr == "" || groupStr.equals("")) {
-            redisUtils.set("groupNewsList", "" + groupId);
+            redisService.set("groupNewsList", "" + groupId);
             logger.info("addGroup,添加成功");
         } else {
             String[] groupNewsList = groupStr.split(",");
@@ -101,7 +79,7 @@ public class BotService {
                 //不存在则加入缓存
                 if (i == (groupNewsList.length - 1)) {
                     groupStr += "," + groupId;
-                    redisUtils.set("groupNewsList", groupStr);
+                    redisService.set("groupNewsList", groupStr);
                     logger.info("addGroup,添加成功");
                 }
             }
@@ -110,7 +88,7 @@ public class BotService {
     }
 
     public boolean delGroup(Long groupId) {
-        String groupStr = (String) redisUtils.get("groupNewsList");
+        String groupStr = (String) redisService.get("groupNewsList");
         if (groupStr == null || groupStr == "" || groupStr.equals("")) {
             logger.info("delGroup,删除失败,群号不存在");
             return false;
@@ -130,7 +108,7 @@ public class BotService {
                 }
             }
             if (flag) {
-                redisUtils.set("groupNewsList", groupStrResult);
+                redisService.set("groupNewsList", groupStrResult);
                 logger.info("delGroup,删除成功");
                 return true;
             } else {
@@ -140,86 +118,139 @@ public class BotService {
         }
     }
 
-    public String sendGroupMessage(String groupId, String content) {
+    public Map sendGroupMessage(String groupId, String content) {
+        Map resultMap = new HashMap();
         if (groupId != null && groupId != "" && content != null && content != "") {
-            global.getWizardBot().getGroup(Long.parseLong(groupId)).sendMessage(new PlainText(content));
-            logger.info("sendMessage,success");
-            return "success";
+            MessageReceipt messageReceipt = global.getWizardBot().getGroup(Long.parseLong(groupId)).sendMessage(new PlainText(content));
+            if (messageReceipt.isToGroup()) {
+                logger.info("sendMessage,success");
+                resultMap.put("status", "success");
+                resultMap.put("msg", "sendMessage,success");
+                resultMap.put("result", "success");
+                return resultMap;
+            }
+            logger.info("sendMessage,没有发到群");
+            resultMap.put("status", "fail");
+            resultMap.put("msg", "sendMessage,没有发到群");
+            return resultMap;
         } else {
-            logger.info("sendMessage,fail,群号和内容不能为空");
-            return "fail";
+            logger.info("sendMessage,群号或内容不能为空");
+            resultMap.put("status", "fail");
+            resultMap.put("msg", "sendMessage,群号或内容不能为空");
+            return resultMap;
         }
     }
 
-    public String sendGroupImage(String groupId, String img) {
+    public Map sendGroupImage(String groupId, String img) {
+        Map resultMap = new HashMap();
         try {
             ExternalResource image = ExternalResource.create(new ByteArrayInputStream(decoder.decode(img)));
-            global.getWizardBot().getGroup(Long.parseLong(groupId)).sendMessage(global.getWizardBot().getGroup(Long.parseLong(groupId)).uploadImage(image));
-            return "sendGroupImage,success";
+            MessageReceipt messageReceipt = global.getWizardBot().getGroup(Long.parseLong(groupId)).sendMessage(global.getWizardBot().getGroup(Long.parseLong(groupId)).uploadImage(image));
+            if (messageReceipt.isToGroup()) {
+                logger.info("sendGroupImage,success");
+                resultMap.put("status", "success");
+                resultMap.put("msg", "sendGroupImage,success");
+                resultMap.put("result", "success");
+                return resultMap;
+            }
+            logger.info("sendGroupImage,没有发到群");
+            resultMap.put("status", "fail");
+            resultMap.put("msg", "sendGroupImage,没有发到群");
+            return resultMap;
         } catch (Exception e) {
-            logger.info("autoSendNews,bot0000007,发送群图片失败");
-            return "sendGroupImage,bot0000007,发送群图片失败";
+            logger.info("sendGroupImage,发送群图片失败");
+            resultMap.put("status", "fail");
+            resultMap.put("msg", "sendGroupImage,发送群图片失败");
+            return resultMap;
         }
     }
 
-    public String autoSendNews() {
-        if (redisUtils.get("autoDate") != null) {
-            if (redisUtils.get("autoDate").equals(Tool.getCurrDate())) {
-                logger.info("autoSendNews,bot0000004,已经发过了");
-                return "bot0000004,已经发过了";
+    public Map autoSendNews() {
+        Map resultMap = new HashMap();
+        if (redisService.get("autoDate") != null) {
+            if (redisService.get("autoDate").equals(BotUtils.getCurrDate())) {
+                logger.info("autoSendNews,已经发过了");
+                resultMap.put("status", "fail");
+                resultMap.put("msg", "autoSendNews,已经发过了");
+                return resultMap;
             }
         }
         logger.info("autoSendNews,开始新闻推送");
         String[] groupNewsList = getGroupNewsList();
         if (groupNewsList != null) {
-            String news = getNews();
-            if (news.indexOf("bot000000") == -1) {
+            Map newsMap = getCurrNewsBase64();
+            if (newsMap.get("status").equals("success")) {
                 for (int i = 0; i < groupNewsList.length; i++) {
-                    sendGroupImage(groupNewsList[i], news);
+                    sendGroupImage(groupNewsList[i], (String) newsMap.get("result"));
+                    if (groupNewsList.length > 1) {
+                        try {
+                            Thread.sleep(3000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
                 //上传今天日期,证明今天已经启动
-                redisUtils.set("autoDate", Tool.getCurrDate());
+                redisService.set("autoDate", BotUtils.getCurrDate());
+
                 logger.info("autoSendNews,success");
-                return "success";
+                resultMap.put("status", "success");
+                resultMap.put("msg", "autoSendNews,success");
+                resultMap.put("result", "success");
+                return resultMap;
             } else {
-                logger.info("autoSendNews," + news);
-                return news;
+                logger.info("autoSendNews," + newsMap.get("msg"));
+                resultMap.put("status", "fail");
+                resultMap.put("msg", "autoSendNews," + newsMap.get("msg"));
+                return resultMap;
             }
         }
-        logger.info("autoSendNews,bot0000005,没有绑定群");
-        return "bot0000005,没有绑定群";
+        logger.info("autoSendNews,没有绑定群");
+        resultMap.put("status", "fail");
+        resultMap.put("msg", "autoSendNews,没有绑定群");
+        return resultMap;
     }
 
-    public String weather(String city) {
+    /**
+     * 获取三天天气
+     *
+     * @return map status-状态;msg-执行信息;result-返回值
+     */
+    public Map weather(String city) {
+        Map resultMap = new HashMap();
         if (botWeatherDateMap.get(city) != null) {
             if (botWeatherDateMap.get(city) + botWeatherCache > System.currentTimeMillis()) {
                 logger.info("weather,获取缓存");
-                return botWeatherContentMap.get(city);
+                resultMap.put("status", "success");
+                resultMap.put("msg", "weather,success");
+                resultMap.put("result", botWeatherContentMap.get(city));
+                return resultMap;
             }
         }
         logger.info("weather,重新获取");
-        //返回结果
-        String result = "bot0000001,不存在的地区";
         String url = "https://bird.ioliu.cn/weather?city=" + city;
         OkHttpClient okHttpClient = new OkHttpClient();
         Request request = new Request.Builder().url(url).build();
-        Response response = null;
+        Response response;
         //获取返回的json
-        String r = "";
+        String r;
         try {
             response = okHttpClient.newCall(request).execute();
             if (response.isSuccessful()) {
                 r = response.body().string();
             } else {
                 logger.info("weather,网络异常");
-                return "bot0000002,网络异常";
+                resultMap.put("status", "fail");
+                resultMap.put("msg", "weather,网络异常");
+                return resultMap;
             }
         } catch (IOException e) {
-            logger.info("weather,bot0000006,IO异常");
+            logger.info("weather,IO异常");
+            resultMap.put("status", "fail");
+            resultMap.put("msg", "weather,IO异常");
+            return resultMap;
         }
-
         Map<String, Object> map = JSON.parseObject(r, Map.class);
-
         String status = "" + map.get("status");
         if (status.equals("ok")) {
             //模板
@@ -264,20 +295,63 @@ public class BotService {
                     continue;
                 }
             }
-            result = resultStart + result1 + result2 + result3 + resultEnd;
+            String result = resultStart + result1 + result2 + result3 + resultEnd;
             botWeatherDateMap.put(city, System.currentTimeMillis());
             botWeatherContentMap.put(city, result);
+
+            logger.info("weather,success");
+            resultMap.put("status", "success");
+            resultMap.put("msg", "weather,success");
+            resultMap.put("result", result);
+            return resultMap;
+        } else {
+            logger.info("weather,不存在的地区");
+            resultMap.put("status", "fail");
+            resultMap.put("msg", "weather,不存在的地区");
+            return resultMap;
         }
-//        System.out.println(result);
-        return result;
     }
 
-    public String getNews() {
-        String currDateStr = Tool.getCurrDate();
+    /**
+     * 获取当天新闻简讯,图片
+     *
+     * @return map status-状态;msg-执行信息;result-返回值(base64)
+     */
+    public Map getCurrNewsBase64() {
+        Map resultMap = new HashMap();
+        Map map = getCurrNewsString();
+        if ((map.get("status")).equals("success")) {
+            String newsString = (String) map.get("result");
+            Map newsBase64Map = BotUtils.stringToBase64(newsString, new Font("楷体", Font.PLAIN, 24), 18, 40, 500);
+            if ((newsBase64Map.get("status")).equals("success")) {
+                logger.info("getCurrNewsBase64,success");
+                resultMap.put("status", "success");
+                resultMap.put("msg", "getCurrNewsBase64,success");
+                resultMap.put("result", newsBase64Map.get("result"));
+                return resultMap;
+            }
+        }
+        logger.info("getCurrNewsBase64," + map.get("msg"));
+        resultMap.put("status", "fail");
+        resultMap.put("msg", "getCurrNewsBase64," + map.get("msg"));
+        return resultMap;
 
-        if (redisUtils.get(currDateStr) != null) {
-            logger.info("news,获取缓存");
-            return stringToPicture((String) redisUtils.get(currDateStr));
+    }
+
+    /**
+     * 获取当天新闻简讯,文字
+     *
+     * @return map status-状态;msg-执行信息;result-返回值
+     */
+    public Map getCurrNewsString() {
+        Map resultMap = new HashMap();
+        String currDateStr = BotUtils.getCurrDate();
+        if (redisService.get(currDateStr) != null) {
+            logger.info("getCurrNewsString,获取缓存success");
+            resultMap.put("status", "success");
+            resultMap.put("msg", "getCurrNewsString,success");
+            resultMap.put("result", redisService.get(currDateStr));
+            return resultMap;
         }
         logger.info("news,重新获取");
         String url = "https://t.me/s/pojieapk";
@@ -322,188 +396,40 @@ public class BotService {
 //                System.out.println(resultStr);
 //                return currElement.wholeText();
 //                    botNewsMap.put(currDateStr, Jsoup.parse(resultStr).wholeText());
-                    redisUtils.set(currDateStr, Jsoup.parse(resultStr).wholeText());
-                    return stringToPicture(Jsoup.parse(resultStr).wholeText());
+                    redisService.set(currDateStr, Jsoup.parse(resultStr).wholeText());
+
+                    logger.info("getCurrNewsString,获取成功success");
+                    resultMap.put("status", "success");
+                    resultMap.put("msg", "getCurrNewsString,success");
+                    resultMap.put("result", Jsoup.parse(resultStr).wholeText());
+                    return resultMap;
                 } else {
-                    logger.info("news,今天没有新闻");
-                    return "bot0000003,今天没有新闻";
+                    logger.info("getCurrNewsString,今天没有新闻");
+                    resultMap.put("status", "fail");
+                    resultMap.put("msg", "getCurrNewsString,今天没有新闻");
+                    return resultMap;
                 }
             } else {
-                logger.info("news,网络异常");
-                return "bot0000002,网络异常";
+                logger.info("getCurrNewsString,网络异常");
+                resultMap.put("status", "fail");
+                resultMap.put("msg", "getCurrNewsString,网络异常");
+                return resultMap;
             }
         } catch (IOException e) {
-//            e.printStackTrace();
-            logger.info("news,网络异常");
-            return "bot0000002,网络异常";
+            logger.info("getCurrNewsString,网络异常");
+            resultMap.put("status", "fail");
+            resultMap.put("msg", "getCurrNewsString,网络异常");
+            return resultMap;
         }
     }
 
-    public String stringToPicture(String news) {
-        String[] newsG = news.split("\n");
-        int height = 0;
-        for (int i = 0; i < newsG.length; i++) {
-            if (newsG[i].equals("\n") || newsG[i].trim().equals("")) {
-                height++;
-                continue;
-            }
-            if (newsG[i].length() > lingTextNum) {
-                height += newsG[i].length() / lingTextNum + 1;
-                continue;
-            } else {
-                height++;
-            }
-        }
-        height = height * line + line;
-        BufferedImage bufferedImage = createImage(newsG, new Font("楷体", Font.PLAIN, 24), 500, height);
-        //输出流
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        try {
-            ImageIO.write(bufferedImage, "png", stream);
-            byte[] bytes = stream.toByteArray();//转换成字节
-            BASE64Encoder encoder = new BASE64Encoder();
-            String png_base64 = encoder.encodeBuffer(bytes).trim();//转换成base64串
-            png_base64 = png_base64.replaceAll("\n", "").replaceAll("\r", "");//删除 \r\n
-            logger.info("stringToPicture,success");
-            return png_base64;
-        } catch (IOException e) {
-            logger.info("stringToPicture,bot0000006,IO异常");
-            return "bot0000006,IO异常";
-        }
-    }
-
-    public BufferedImage createImage(String[] str, Font font, Integer width, Integer height) {
-        // 创建图片
-        BufferedImage image = new BufferedImage(width, height,
-                BufferedImage.TYPE_INT_BGR);
-        Graphics2D g = image.createGraphics();
-        g.setClip(0, 0, width, height);
-        g.setColor(Color.white);
-        g.fillRect(0, 0, width, height);// 先用黑色填充整张图片,也就是背景
-        g.setColor(Color.black);// 在换成黑色
-        g.setFont(font);// 设置画笔字体
-
-        String strTemp;
-        int startX = 30;//起始X
-        int startY = 35;//起始Y
-
-        int isNull = 0;
-
-        for (int i = 0; i < str.length; i++) {
-            strTemp = str[i];
-            if (strTemp.equals("\n") || strTemp.trim().equals("")) {
-                if (isNull == 0) {
-                    g.drawString("", startX, startY);
-                    startY += line;
-                    isNull = 1;
-                }
-                continue;
-            }
-            isNull = 0;
-            if (strTemp.length() > lingTextNum) {
-                for (int j = 0; j <= strTemp.length() / lingTextNum; j++) {
-                    if (j == strTemp.length() / lingTextNum) {
-                        g.drawString(strTemp.substring(j * lingTextNum), startX, startY);
-                        startY += line;
-                    } else {
-                        g.drawString(strTemp.substring(j * lingTextNum, (j * lingTextNum) + lingTextNum), startX, startY);
-                        startY += line;
-                    }
-                }
-                continue;
-            } else {
-                g.drawString(strTemp, startX, startY);
-                startY += line;
-            }
-        }
-        g.drawString("", startX, startY);
-
-        //加水印
-        String waterMarkContent = "老刘星什么时候结婚";
-        g.drawImage(image, 0, 0, width, height, null);
-        g.setColor(new Color(169, 169, 169)); //设置水印颜色
-        g.setFont(new Font("华文琥珀", Font.ITALIC, 34));              //设置字体
-        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, 0.4f));//设置水印文字透明度
-        g.rotate(Math.toRadians(45));//设置水印旋转
-
-        JLabel label = new JLabel(waterMarkContent);
-        FontMetrics metrics = label.getFontMetrics(font);
-        int width1 = metrics.stringWidth(label.getText());//文字水印的宽
-        int rowsNumber = height / width1;// 图片的高  除以  文字水印的宽    ——> 打印的行数(以文字水印的宽为间隔)
-        int columnsNumber = width / width1;//图片的宽 除以 文字水印的宽   ——> 每行打印的列数(以文字水印的宽为间隔)
-        //防止图片太小而文字水印太长，所以至少打印一次
-        if (rowsNumber < 1) {
-            rowsNumber = 1;
-        }
-        if (columnsNumber < 1) {
-            columnsNumber = 1;
-        }
-        for (int j = 0; j < rowsNumber; j++) {
-            for (int i = 0; i < columnsNumber; i++) {
-                g.drawString(waterMarkContent, i * width1 + j * width1, -i * width1 + j * width1);//画出水印,并设置水印位置
-            }
-        }
-
-        //释放资源
-        g.dispose();
-        logger.info("createImage,success");
-        return image;
-    }
-
-    //例,生存天数19951111,事件直接调用的方法
-    public String getSurvivalDays(String str) {
-        String result = "";
-
-        String[] s = str.split("生存天数");
-        String birthday = s[1];
-
-        //出生日期
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-        Date date;
-        try {
-            date = sdf.parse(birthday);
-        } catch (ParseException e) {
-            logger.info("getSurvivalDays,bot0000007,日期异常");
-            return "bot0000007,日期异常";
-        }
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-
-        //当天日期
-        Date currDate = new Date();
-        Calendar currCalendar = Calendar.getInstance();
-
-        //判断日期是否正常
-        if (currDate.before(date)) {
-            logger.info("getSurvivalDays,bot0000007,日期异常");
-            return "bot0000007,日期异常";
-        }
-
-        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy年MM月dd日");
-        Long days = (currDate.getTime() - date.getTime()) / (24 * 60 * 60 * 1000) + 1;
-        result += "如果说" + sdf2.format(date) + "是第一天,那么今天是你在世界上的第" + days + "天\n";
-
-        //计算年
-        int currYear = currCalendar.get(Calendar.YEAR);
-        int year = calendar.get(Calendar.YEAR);
-        int years = currYear - year + 1;
-        result += "你今年虚岁:" + years + "岁\n";
-
-        years = currYear - year;
-        if (years <= 0) {
-            result += "你今年周岁:" + years + "岁";
-        } else {
-            int currMonth = currCalendar.get(Calendar.MONTH);
-            int currDay = currCalendar.get(Calendar.DAY_OF_MONTH);
-
-            int month = calendar.get(Calendar.MONTH);
-            int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-            if ((currMonth < month) || (currMonth == month && currDay <= day)) {
-                years--;
-            }
-            result += "你今年周岁:" + (years < 0 ? 0 : years) + "岁";
-        }
-        return result;
+    /**
+     * 生存日期功能,获取出生日期后,计算年龄和生存天数
+     *
+     * @param str 例,生存天数19951111
+     * @return map status-状态;msg-执行信息;result-返回值
+     */
+    public Map getSurvivalDays(String str) {
+        return BotUtils.getSurvivalDays(str);
     }
 }

@@ -45,7 +45,7 @@ public class WizardBot implements ApplicationRunner {
         global.setWizardBot(BotFactory.INSTANCE.newBot(Long.parseLong(global.getAccount()), global.getPassword(), new BotConfiguration() {{
             setWorkingDir(new File("C:/wizardbot"));
             fileBasedDeviceInfo(); // 使用 device.json 存储设备信息
-            setProtocol(MiraiProtocol.ANDROID_WATCH); // 切换协议
+            setProtocol(MiraiProtocol.ANDROID_PHONE); // 切换协议
             redirectNetworkLogToFile();
             redirectNetworkLogToDirectory();
         }}));

@@ -2,7 +2,7 @@ package com.example.wizardbot.handle;
 
 import com.example.wizardbot.contants.Global;
 import com.example.wizardbot.service.BotService;
-import com.example.wizardbot.utils.Tool;
+import com.example.wizardbot.utils.BotUtils;
 import kotlin.coroutines.CoroutineContext;
 import net.mamoe.mirai.event.EventHandler;
 import net.mamoe.mirai.event.ListeningStatus;
@@ -15,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Map;
 
 /**
  * @Auther: auther
@@ -78,7 +80,6 @@ public class EventHandle extends SimpleListenerHost {
         }
 //        System.out.println(messageTemp);
 //        System.out.println(event.getMessage().contentToString());
-
         if (messageTemp.equals("开启每日简讯推送")) {
             Long groupId = event.getSubject().getId();
             global.getExecutor().execute(() -> {
@@ -105,27 +106,31 @@ public class EventHandle extends SimpleListenerHost {
         } else if (messageTemp.equals("新闻")) {
             Long groupId = event.getSubject().getId();
             global.getExecutor().execute(() -> {
-                String news = botService.getNews();
-                if (news.indexOf("bot000000") == -1) {
-                    botService.sendGroupImage("" + groupId, news);
+                Map newsMap = botService.getCurrNewsBase64();
+                if (newsMap.get("status").equals("success")) {
+                    botService.sendGroupImage("" + groupId, (String) newsMap.get("result"));
                 } else {
-                    botService.sendGroupMessage("" + groupId, news);
+                    botService.sendGroupMessage("" + groupId, (String) newsMap.get("msg"));
                 }
             });
             return ListeningStatus.LISTENING;
         } else if (messageTemp.equals("吃饭推荐")) {
-            event.getSubject().sendMessage(new PlainText(global.getFoods()[Tool.get_random(0, global.getFoods().length)]));
+            event.getSubject().sendMessage(new PlainText(global.getFoods()[BotUtils.getRandom(0, global.getFoods().length)]));
             return ListeningStatus.LISTENING;
         } else if (messageTemp.equals("石原里美功能介绍")) {
             event.getSubject().sendMessage(new PlainText(global.getMenu()));
             return ListeningStatus.LISTENING;
         } else if (messageTemp.indexOf("生存天数") != -1) {
-            //例子:生存天数19951111
             Long groupId = event.getSubject().getId();
             String finalMessageTemp = messageTemp;
             global.getExecutor().execute(() -> {
                 if (finalMessageTemp.length() == 12) {
-                    botService.sendGroupMessage("" + groupId, botService.getSurvivalDays(finalMessageTemp));
+                    Map map = botService.getSurvivalDays(finalMessageTemp);
+                    if (map.get("status").equals("success")) {
+                        botService.sendGroupMessage("" + groupId, (String) map.get("result"));
+                    } else {
+                        botService.sendGroupMessage("" + groupId, (String) map.get("msg"));
+                    }
                 }
             });
             return ListeningStatus.LISTENING;
@@ -135,10 +140,11 @@ public class EventHandle extends SimpleListenerHost {
             global.getExecutor().execute(() -> {
                 if (finalMessageTemp.length() >= 4 && finalMessageTemp.length() < 10) {
                     String[] weatherContent = finalMessageTemp.split("天气");
-                    try {
-                        botService.sendGroupMessage("" + groupId, botService.weather("" + weatherContent[0]));
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    Map map = botService.weather("" + weatherContent[0]);
+                    if (map.get("status").equals("success")) {
+                        botService.sendGroupMessage("" + groupId, (String) map.get("result"));
+                    } else {
+                        botService.sendGroupMessage("" + groupId, (String) map.get("msg"));
                     }
                 }
             });
@@ -150,13 +156,13 @@ public class EventHandle extends SimpleListenerHost {
     @NotNull
     @EventHandler
     public void getBotOffline(@NotNull BotOfflineEvent event) throws Exception {
-        logger.error("我掉了");
+        logger.error("掉了");
     }
 
     @NotNull
     @EventHandler
     public void getBotOffline(@NotNull BotReloginEvent event) throws Exception {
-        logger.error("我重新登录");
+        logger.error("重新登录");
     }
 
     @Override
