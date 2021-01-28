@@ -118,6 +118,11 @@ public class BotService {
         }
     }
 
+    /**
+     * 发送群消息
+     *
+     * @return map status-状态;msg-执行信息;result-返回值
+     */
     public Map sendGroupMessage(String groupId, String content) {
         Map resultMap = new HashMap();
         if (groupId != null && groupId != "" && content != null && content != "") {
@@ -141,6 +146,11 @@ public class BotService {
         }
     }
 
+    /**
+     * 发送群图片
+     *
+     * @return map status-状态;msg-执行信息;result-返回值
+     */
     public Map sendGroupImage(String groupId, String img) {
         Map resultMap = new HashMap();
         try {
@@ -165,6 +175,11 @@ public class BotService {
         }
     }
 
+    /**
+     * 自动发送新闻图片
+     *
+     * @return map status-状态;msg-执行信息;result-返回值
+     */
     public Map autoSendNews() {
         Map resultMap = new HashMap();
         if (redisService.get("autoDate") != null) {
