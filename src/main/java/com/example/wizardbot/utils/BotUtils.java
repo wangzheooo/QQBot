@@ -38,7 +38,7 @@ public class BotUtils {
     }
 
     /**
-     * 生存日期功能,获取出生日期后,计算年龄和生存天数
+     * 获取随机值
      *
      * @param start 起始
      * @param end   截止

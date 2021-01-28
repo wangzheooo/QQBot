@@ -17,8 +17,7 @@ import java.io.File;
 /**
  * @Auther: auther
  * @Date: 2021/1/14 15:32
- * @Description:后期优化多线程
- * 未来可以加的功能:1.文字转二维码
+ * @Description:后期优化多线程 未来可以加的功能:1.文字转二维码
  */
 @Component
 public class WizardBot implements ApplicationRunner {
@@ -45,7 +44,7 @@ public class WizardBot implements ApplicationRunner {
         global.setWizardBot(BotFactory.INSTANCE.newBot(Long.parseLong(global.getAccount()), global.getPassword(), new BotConfiguration() {{
             setWorkingDir(new File("C:/wizardbot"));
             fileBasedDeviceInfo(); // 使用 device.json 存储设备信息
-            setProtocol(MiraiProtocol.ANDROID_PHONE); // 切换协议
+            setProtocol(MiraiProtocol.ANDROID_WATCH); // 切换协议
             redirectNetworkLogToFile();
             redirectNetworkLogToDirectory();
         }}));

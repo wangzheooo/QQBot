@@ -48,30 +48,17 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>net.mamoe</groupId>
             <artifactId>mirai-login-solver-selenium</artifactId>
             <version>1.0-dev-15</version>
-        </dependency>
-
-        <!--<dependency>
-            <groupId>net.mamoe</groupId>
-            <artifactId>mirai-core-jvm</artifactId>
-            <version>2.0-RC</version>
         </dependency>-->
 
         <dependency>
             <groupId>net.mamoe</groupId>
-            <artifactId>mirai-core</artifactId>
-            <version>2.1.0</version>
-        </dependency>
-
-        <!--<dependency>
-            <groupId>net.mamoe</groupId>
             <artifactId>mirai-core-jvm</artifactId>
-            <version>2.2.0-dev-3</version>
-            <type>pom</type>
-        </dependency>-->
+            <version>2.2.0-dev-4</version>
+        </dependency>
 
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
@@ -147,7 +134,7 @@
     <repositories>
         <repository>
             <id>jcenter</id>
-            <url>https://jcenter.bintray.com/</url>
+            <url>https://maven.aliyun.com/repository/public</url>
         </repository>
     </repositories>
 
