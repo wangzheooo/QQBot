@@ -46,7 +46,7 @@ git网址:https://github.com/sansui233/proxypool
 
 每天8:00在群里发每日简讯
 
-可以推荐随机午餐
+可以发送吃饭推荐
 
 可以发送天气信息
 
