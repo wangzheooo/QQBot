@@ -35,9 +35,20 @@ public class Global {
     //线程池
     ExecutorService executor = Executors.newCachedThreadPool();
 
-    private String menu="1.发送,石原里美功能介绍\n2.发送,开启每日简讯推送\n3.发送,关闭每日简讯推送\n4.发送,石原里美你好\n5.发送,新闻\n6.发送,吃饭推荐\n7.发送,生存天数19951212\n8.发送,淄博天气\n";
+    private String menu = "" +
+            "注:命令前带有小数点\n" +
+            "1.发送(.功能介绍)\n" +
+            "2.发送(.开启每日简讯)\n" +
+            "3.发送(.关闭每日简讯)\n" +
+            "4.发送(.你好)\n" +
+            "5.发送(.新闻)\n" +
+            "6.发送(.吃饭推荐)\n" +
+            "7.发送(.年龄19951212)\n" +
+            "8.发送(淄博天气)\n" +
+            "9.发送,(.二维码123)\n";
 
-    private String[] foods = {"馄饨",
+    private String[] foods = {
+            "馄饨",
             "拉面",
             "热干面",
             "刀削面",
@@ -64,5 +75,6 @@ public class Global {
             "炸鸡",
             "寿司",
             "煎饼果子",
-            "生煎包" };
+            "生煎包"
+    };
 }

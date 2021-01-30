@@ -80,74 +80,84 @@ public class EventHandle extends SimpleListenerHost {
         }
 //        System.out.println(messageTemp);
 //        System.out.println(event.getMessage().contentToString());
-        if (messageTemp.equals("开启每日简讯推送")) {
+        if (messageTemp.equals(".开启每日简讯")) {
             Long groupId = event.getSubject().getId();
             global.getExecutor().execute(() -> {
                 if (botService.addGroup(groupId)) {
-                    botService.sendGroupMessage("" + groupId, "每日简讯推送开启成功");
+                    botService.sendGroupMessage(groupId, "已开启推送每日简讯");
                 } else {
-                    botService.sendGroupMessage("" + groupId, "已经开启了,不要重复开启");
+                    botService.sendGroupMessage(groupId, "已经开启了,不要重复开启");
                 }
             });
             return ListeningStatus.LISTENING;
-        } else if (messageTemp.equals("关闭每日简讯推送")) {
+        } else if (messageTemp.equals(".关闭每日简讯")) {
             Long groupId = event.getSubject().getId();
             global.getExecutor().execute(() -> {
                 if (botService.delGroup(groupId)) {
-                    botService.sendGroupMessage("" + groupId, "每日简讯推送已关闭");
+                    botService.sendGroupMessage(groupId, "已关闭每日简讯推送");
                 } else {
-                    botService.sendGroupMessage("" + groupId, "不存在的群号");
+                    botService.sendGroupMessage(groupId, "不存在的群号");
                 }
             });
             return ListeningStatus.LISTENING;
-        } else if (messageTemp.equals("石原里美你好")) {
+        } else if (messageTemp.equals(".你好")) {
             event.getSubject().sendMessage(new PlainText(event.getSenderName() + "你好呀"));
             return ListeningStatus.LISTENING;
-        } else if (messageTemp.equals("新闻")) {
+        } else if (messageTemp.equals(".新闻")) {
             Long groupId = event.getSubject().getId();
             global.getExecutor().execute(() -> {
                 Map newsMap = botService.getCurrNewsBase64();
                 if (newsMap.get("status").equals("success")) {
-                    botService.sendGroupImage("" + groupId, (String) newsMap.get("result"));
+                    botService.sendGroupImage(groupId, (String) newsMap.get("result"));
                 } else {
-                    botService.sendGroupMessage("" + groupId, (String) newsMap.get("msg"));
+                    botService.sendGroupMessage(groupId, (String) newsMap.get("msg"));
                 }
             });
             return ListeningStatus.LISTENING;
-        } else if (messageTemp.equals("吃饭推荐")) {
+        } else if (messageTemp.equals(".吃饭推荐")) {
             event.getSubject().sendMessage(new PlainText(global.getFoods()[BotUtils.getRandom(0, global.getFoods().length)]));
             return ListeningStatus.LISTENING;
-        } else if (messageTemp.equals("石原里美功能介绍")) {
+        } else if (messageTemp.equals(".功能介绍")) {
             event.getSubject().sendMessage(new PlainText(global.getMenu()));
             return ListeningStatus.LISTENING;
-        } else if (messageTemp.indexOf("生存天数") != -1) {
+        } else if (messageTemp.startsWith(".年龄")) {
             Long groupId = event.getSubject().getId();
             String finalMessageTemp = messageTemp;
-            global.getExecutor().execute(() -> {
-                if (finalMessageTemp.length() == 12) {
+            String demoStr = ".年龄20200130";
+            if (messageTemp.length() == demoStr.length()) {
+                global.getExecutor().execute(() -> {
                     Map map = botService.getSurvivalDays(finalMessageTemp);
                     if (map.get("status").equals("success")) {
-                        botService.sendGroupMessage("" + groupId, (String) map.get("result"));
+                        botService.sendGroupMessage(groupId, (String) map.get("result"));
                     } else {
-                        botService.sendGroupMessage("" + groupId, (String) map.get("msg"));
+                        botService.sendGroupMessage(groupId, (String) map.get("msg"));
                     }
-                }
-            });
+
+                });
+            }
+            return ListeningStatus.LISTENING;
+        } else if (messageTemp.startsWith(".二维码")) {
+            Long groupId = event.getSubject().getId();
+            String finalMessageTemp = messageTemp;
+            String[] qrStr = finalMessageTemp.split(".二维码");
+            if (qrStr.length > 0) {
+                global.getExecutor().execute(() -> botService.generateQRCodeImage(groupId, qrStr[1]));
+            }
             return ListeningStatus.LISTENING;
         } else if (messageTemp.indexOf("天气") != -1) {
             Long groupId = event.getSubject().getId();
             String finalMessageTemp = messageTemp;
-            global.getExecutor().execute(() -> {
-                if (finalMessageTemp.length() >= 4 && finalMessageTemp.length() < 10) {
+            if (finalMessageTemp.length() >= 4 && finalMessageTemp.length() < 10) {
+                global.getExecutor().execute(() -> {
                     String[] weatherContent = finalMessageTemp.split("天气");
                     Map map = botService.weather("" + weatherContent[0]);
                     if (map.get("status").equals("success")) {
-                        botService.sendGroupMessage("" + groupId, (String) map.get("result"));
+                        botService.sendGroupMessage(groupId, (String) map.get("result"));
                     } else {
-                        botService.sendGroupMessage("" + groupId, (String) map.get("msg"));
+                        botService.sendGroupMessage(groupId, (String) map.get("msg"));
                     }
-                }
-            });
+                });
+            }
             return ListeningStatus.LISTENING;
         }
         return ListeningStatus.LISTENING;

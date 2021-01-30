@@ -17,7 +17,7 @@ import java.io.File;
 /**
  * @Auther: auther
  * @Date: 2021/1/14 15:32
- * @Description:后期优化多线程 未来可以加的功能:1.文字转二维码
+ * @Description:
  */
 @Component
 public class WizardBot implements ApplicationRunner {

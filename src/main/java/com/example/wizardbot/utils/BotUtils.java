@@ -58,7 +58,7 @@ public class BotUtils {
         Map resultMap = new HashMap();
         String result = "";
 
-        String[] s = str.split("生存天数");
+        String[] s = str.split(".年龄");
         String birthday = s[1];
 
         //出生日期
@@ -194,7 +194,7 @@ public class BotUtils {
         }
         g.drawString("", startX, startY);
         //加水印
-        String waterMarkContent = "老刘星什么时候结婚";
+        String waterMarkContent = "我是水印我是水印";
         g.drawImage(image, 0, 0, width, height, null);
         g.setColor(new Color(169, 169, 169)); //设置水印颜色
         g.setFont(new Font("华文琥珀", Font.ITALIC, 34));              //设置字体
@@ -240,6 +240,12 @@ public class BotUtils {
             resultMap.put("status", "fail");
             resultMap.put("msg", "stringToBase64,IO异常");
             return resultMap;
+        }finally {
+            try {
+                stream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -3,6 +3,7 @@ package com.example.wizardbot.service;
 import com.alibaba.fastjson.JSON;
 import com.example.wizardbot.contants.Global;
 import com.example.wizardbot.utils.BotUtils;
+import com.example.wizardbot.utils.QRCodeUtil;
 import net.mamoe.mirai.message.MessageReceipt;
 import net.mamoe.mirai.message.data.PlainText;
 import net.mamoe.mirai.utils.ExternalResource;
@@ -123,10 +124,10 @@ public class BotService {
      *
      * @return map status-状态;msg-执行信息;result-返回值
      */
-    public Map sendGroupMessage(String groupId, String content) {
+    public Map sendGroupMessage(Long groupId, String content) {
         Map resultMap = new HashMap();
-        if (groupId != null && groupId != "" && content != null && content != "") {
-            MessageReceipt messageReceipt = global.getWizardBot().getGroup(Long.parseLong(groupId)).sendMessage(new PlainText(content));
+        if (groupId != null && content != null && content != "") {
+            MessageReceipt messageReceipt = global.getWizardBot().getGroup(groupId).sendMessage(new PlainText(content));
             if (messageReceipt.isToGroup()) {
                 logger.info("sendMessage,success");
                 resultMap.put("status", "success");
@@ -151,11 +152,11 @@ public class BotService {
      *
      * @return map status-状态;msg-执行信息;result-返回值
      */
-    public Map sendGroupImage(String groupId, String img) {
+    public Map sendGroupImage(Long groupId, String img) {
         Map resultMap = new HashMap();
         try {
             ExternalResource image = ExternalResource.create(new ByteArrayInputStream(decoder.decode(img)));
-            MessageReceipt messageReceipt = global.getWizardBot().getGroup(Long.parseLong(groupId)).sendMessage(global.getWizardBot().getGroup(Long.parseLong(groupId)).uploadImage(image));
+            MessageReceipt messageReceipt = global.getWizardBot().getGroup(groupId).sendMessage(global.getWizardBot().getGroup(groupId).uploadImage(image));
             if (messageReceipt.isToGroup()) {
                 logger.info("sendGroupImage,success");
                 resultMap.put("status", "success");
@@ -196,10 +197,10 @@ public class BotService {
             Map newsMap = getCurrNewsBase64();
             if (newsMap.get("status").equals("success")) {
                 for (int i = 0; i < groupNewsList.length; i++) {
-                    sendGroupImage(groupNewsList[i], (String) newsMap.get("result"));
+                    sendGroupImage(Long.parseLong(groupNewsList[i]), (String) newsMap.get("result"));
                     if (groupNewsList.length > 1) {
                         try {
-                            Thread.sleep(3000);
+                            Thread.sleep(2000);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -446,5 +447,20 @@ public class BotService {
      */
     public Map getSurvivalDays(String str) {
         return BotUtils.getSurvivalDays(str);
+    }
+
+    /**
+     * 文字转二维码
+     *
+     * @param str
+     * @return map status-状态;msg-执行信息;result-返回值
+     */
+    public void generateQRCodeImage(Long id, String str) {
+        Map map = QRCodeUtil.generateQRCodeImage(str);
+        if (map.get("status").equals("success")) {
+            sendGroupImage(id, (String) map.get("result"));
+        } else {
+            sendGroupMessage(id, (String) map.get("msg"));
+        }
     }
 }
