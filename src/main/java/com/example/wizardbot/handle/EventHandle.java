@@ -114,9 +114,6 @@ public class EventHandle extends SimpleListenerHost {
                 }
             });
             return ListeningStatus.LISTENING;
-        } else if (messageTemp.equals(".吃饭推荐")) {
-            event.getSubject().sendMessage(new PlainText(global.getFoods()[BotUtils.getRandom(0, global.getFoods().length)]));
-            return ListeningStatus.LISTENING;
         } else if (messageTemp.equals(".功能介绍")) {
             event.getSubject().sendMessage(new PlainText(global.getMenu()));
             return ListeningStatus.LISTENING;
@@ -142,6 +139,13 @@ public class EventHandle extends SimpleListenerHost {
             String[] qrStr = finalMessageTemp.split(".二维码");
             if (qrStr.length > 0) {
                 global.getExecutor().execute(() -> botService.generateQRCodeImage(groupId, qrStr[1]));
+            }
+            return ListeningStatus.LISTENING;
+        } else if (messageTemp.startsWith(".快餐推荐")) {
+            String finalMessageTemp = messageTemp;
+            String[] str = finalMessageTemp.split(".快餐推荐");
+            if (str.length > 0) {
+                global.getExecutor().execute(() -> botService.getKuaiCan(event.getSubject().getId(),event.getSender().getId(), str[1]));
             }
             return ListeningStatus.LISTENING;
         } else if (messageTemp.indexOf("天气") != -1) {

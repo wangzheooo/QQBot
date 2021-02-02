@@ -53,6 +53,12 @@ public class BotService {
     //天气缓存时间,5分钟,1000*60*5
     int botWeatherCache = 1000 * 60 * 5;
 
+    //快餐推荐缓存
+    Map<Long, Long> kuaiCanTimeMap = new HashMap<>();
+    Map<Long, Integer> kuaiCanNumMap = new HashMap<>();
+    int kuaiCanCache = 1000 * 60 * 60 * 3;
+    int kuaiCanNum = 5;
+
     public String[] getGroupNewsList() {
         //群号缓存
         String groupStr = (String) redisService.get("groupNewsList");
@@ -461,6 +467,44 @@ public class BotService {
             sendGroupImage(id, (String) map.get("result"));
         } else {
             sendGroupMessage(id, (String) map.get("msg"));
+        }
+    }
+
+    /**
+     * 小吃快猜推荐
+     *
+     * @param city
+     * @return map status-状态;msg-执行信息;result-返回值
+     */
+    public void getKuaiCan(Long groupId, Long senderId, String city) {
+        boolean flag = true;
+        if (kuaiCanTimeMap.get(senderId) != null) {
+            //有的话判断时间
+            if (kuaiCanTimeMap.get(senderId) + kuaiCanCache > System.currentTimeMillis()) {
+                if (kuaiCanNumMap.get(senderId) >= kuaiCanNum) {
+                    flag = false;
+                } else {
+                    kuaiCanNumMap.put(senderId, kuaiCanNumMap.get(senderId) + 1);
+                }
+            } else {
+                //超过时间重新赋值
+                kuaiCanTimeMap.put(senderId, System.currentTimeMillis());
+                kuaiCanNumMap.put(senderId, 1);
+            }
+        } else {
+            //没有就创建
+            kuaiCanTimeMap.put(senderId, System.currentTimeMillis());
+            kuaiCanNumMap.put(senderId, 1);
+        }
+        if (flag) {
+            Map map = BotUtils.getKuaiCan(city);
+            if (map.get("status").equals("success")) {
+                sendGroupMessage(groupId, (String) map.get("result"));
+            } else {
+                sendGroupMessage(groupId, (String) map.get("msg"));
+            }
+        } else {
+            sendGroupMessage(groupId, "三小时内已经用了" + kuaiCanNum + "次,不能再推荐了,三小时后再试试吧");
         }
     }
 }

@@ -1,5 +1,10 @@
 package com.example.wizardbot.utils;
 
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sun.misc.BASE64Encoder;
@@ -12,10 +17,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.List;
 
 /**
  * @Auther: auther
@@ -25,15 +28,20 @@ import java.util.Map;
 public class BotUtils {
     private static final Logger logger = LoggerFactory.getLogger(BotUtils.class);
 
+    private static Map<String, String> cookies = null;
+
     /**
      * 获取今天日期
      *
-     * @return date 例:1月9日,1月10日
+     * @return date 例:1月09日,1月10日
      */
     public static String getCurrDate() {
         Calendar calendar = Calendar.getInstance();
         int month = calendar.get(Calendar.MONTH) + 1;
         int day = calendar.get(Calendar.DATE);
+        if (day < 10) {
+            return "" + month + "月" + "0" + day + "日";
+        }
         return "" + month + "月" + day + "日";
     }
 
@@ -240,12 +248,98 @@ public class BotUtils {
             resultMap.put("status", "fail");
             resultMap.put("msg", "stringToBase64,IO异常");
             return resultMap;
-        }finally {
+        } finally {
             try {
                 stream.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    /**
+     * 快餐推荐
+     *
+     * @param city 城市拼音,例,beijign,zibo,huantai
+     * @return map status-状态;msg-执行信息;result-返回值
+     */
+    public static Map getKuaiCan(String city) {
+        Map resultMap = new HashMap();
+        List<Map> list = new ArrayList<>();
+
+        city = city.toLowerCase();
+        //ch10餐饮,g112小吃快餐,x5y25价格筛选,p2第二页,
+        String url = "http://www.dianping.com/" + city + "/ch10/g112x5y20";
+        try {
+            if (cookies == null) {
+                Connection.Response res = Jsoup.connect(url).timeout(3000).execute();
+                cookies = res.cookies();
+            }
+            //设置多个请求头，头信息保存到Map集合中
+            Map<String, String> header = new HashMap<String, String>();
+            header.put("Host", "www.dianping.com");
+            header.put("Referer", url);
+            header.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36");
+            header.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
+            header.put("Accept-Language", "zh-cn,zh;q=0.5");
+            header.put("Accept-Encoding", "gzip, deflate");
+            header.put("Cache-Control", "no-cache");
+            header.put("Connection", "keep-alive");
+
+            Document document = Jsoup.connect(url).headers(header).cookies(cookies).get();
+            if (document.getElementsByClass("logo").text().equals("验证中心")) {
+                logger.info("getKuaiCan,需要验证");
+                resultMap.put("status", "fail");
+                resultMap.put("msg", "过会再试");
+                return resultMap;
+            }
+            //先看定位对不对
+            Elements addrElements = document.getElementsByClass("J-current-city");
+            if (addrElements.text().equals("上海")) {
+                if (!city.equals("shanghai")) {
+                    logger.info("getKuaiCan," + city + "," + addrElements.text());
+                    resultMap.put("status", "fail");
+                    resultMap.put("msg", "检查城市拼音");
+                    return resultMap;
+                }
+            }
+            //获取页数
+            Elements pageElements = document.getElementsByClass("PageLink");
+            int page = Integer.parseInt(pageElements.get(pageElements.size() - 1).text());
+
+            int pageTemp = BotUtils.getRandom(1, page);
+            if (pageTemp == 1) {
+                url = "http://www.dianping.com/" + city + "/ch10/g112x5y20";
+            } else {
+                url = "http://www.dianping.com/" + city + "/ch10/g112x5y20" + "p" + pageTemp;
+            }
+            Document d = Jsoup.connect(url).headers(header).cookies(cookies).get();
+
+            Elements elementsByTag = d.getElementById("shop-all-list").getElementsByClass("txt");
+            if (elementsByTag != null) {
+                for (Element tag : elementsByTag) {
+                    Map<String, String> map = new HashMap<>();
+                    for (Element a : tag.getElementsByAttributeValue("data-hippo-type", "shop")) {
+                        map.put("mer", a.attr("title"));
+                    }
+                    list.add(map);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (list != null) {
+            logger.info("getKuaiCan,success");
+            resultMap.put("status", "success");
+            resultMap.put("msg", "success");
+            resultMap.put("result", list.get(BotUtils.getRandom(0, list.size() - 1)).get("mer"));
+            return resultMap;
+        } else {
+            logger.info("getKuaiCan,未知原因");
+            resultMap.put("status", "fail");
+            resultMap.put("msg", "未知原因,过会再试");
+            return resultMap;
         }
     }
 
