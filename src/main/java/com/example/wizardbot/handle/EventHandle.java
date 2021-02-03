@@ -117,6 +117,10 @@ public class EventHandle extends SimpleListenerHost {
         } else if (messageTemp.equals(".功能介绍")) {
             event.getSubject().sendMessage(new PlainText(global.getMenu()));
             return ListeningStatus.LISTENING;
+        } else if (messageTemp.equals(".nba")) {
+            Long groupId = event.getSubject().getId();
+            global.getExecutor().execute(() -> botService.getNBAInfo(groupId));
+            return ListeningStatus.LISTENING;
         } else if (messageTemp.startsWith(".年龄")) {
             Long groupId = event.getSubject().getId();
             String finalMessageTemp = messageTemp;
@@ -142,11 +146,12 @@ public class EventHandle extends SimpleListenerHost {
             }
             return ListeningStatus.LISTENING;
         } else if (messageTemp.startsWith(".快餐推荐")) {
-            String finalMessageTemp = messageTemp;
+            event.getSubject().sendMessage(new PlainText("敬请期待"));
+            /*String finalMessageTemp = messageTemp;
             String[] str = finalMessageTemp.split(".快餐推荐");
             if (str.length > 0) {
-                global.getExecutor().execute(() -> botService.getKuaiCan(event.getSubject().getId(),event.getSender().getId(), str[1]));
-            }
+                global.getExecutor().execute(() -> botService.getKuaiCan(event.getSubject().getId(), event.getSender().getId(), str[1]));
+            }*/
             return ListeningStatus.LISTENING;
         } else if (messageTemp.indexOf("天气") != -1) {
             Long groupId = event.getSubject().getId();

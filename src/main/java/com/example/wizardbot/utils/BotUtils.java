@@ -7,6 +7,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.GetMapping;
 import sun.misc.BASE64Encoder;
 
 import javax.imageio.ImageIO;
@@ -31,7 +32,7 @@ public class BotUtils {
     private static Map<String, String> cookies = null;
 
     /**
-     * 获取今天日期
+     * 获取今天日期,新闻和天气用
      *
      * @return date 例:1月09日,1月10日
      */
@@ -268,7 +269,8 @@ public class BotUtils {
         List<Map> list = new ArrayList<>();
 
         city = city.toLowerCase();
-        //ch10餐饮,g112小吃快餐,x5y25价格筛选,p2第二页,
+        //ch10餐饮,g112小吃快餐,x5y25价格筛选,p2第二页
+        //http://www.dianping.com/huantai/ch10/g112x5y20
         String url = "http://www.dianping.com/" + city + "/ch10/g112x5y20";
         try {
             if (cookies == null) {
@@ -343,4 +345,44 @@ public class BotUtils {
         }
     }
 
+    /**
+     * 今日NBA赛事
+     *
+     * @return map status-状态;msg-执行信息;result-返回值
+     */
+    public static Map getNBAInfo() {
+        Map resultMap = new HashMap();
+        String currDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        String resultStr;
+        String url = "https://nba.hupu.com/games/" + currDate;
+        try {
+            Document document = Jsoup.connect(url).get();
+            //gamecenter_content_l
+            Elements elementsByTag = document.getElementsByClass("list_box");
+            if (elementsByTag != null && elementsByTag.size() > 0) {
+                resultStr = currDate + "赛事\n";
+                resultStr += "------\n";
+                for (Element tag : elementsByTag) {
+                    String[] str1 = tag.getElementsByClass("team_vs_a_1").text().split(" ");
+                    String[] str2 = tag.getElementsByClass("team_vs_a_2").text().split(" ");
+                    resultStr += str1[1] + str1[0] + "-" + str2[0] + str2[1] + "\n";
+                }
+                logger.info("getNBAInfo,success");
+                resultMap.put("status", "success");
+                resultMap.put("msg", "success");
+                resultMap.put("result", resultStr);
+                return resultMap;
+            } else {
+                logger.info("getNBAInfo,今天没有比赛");
+                resultMap.put("status", "fail");
+                resultMap.put("msg", "今天没有比赛");
+                return resultMap;
+            }
+        } catch (IOException e) {
+            logger.info("getNBAInfo,IO异常");
+            resultMap.put("status", "fail");
+            resultMap.put("msg", "IO异常");
+            return resultMap;
+        }
+    }
 }

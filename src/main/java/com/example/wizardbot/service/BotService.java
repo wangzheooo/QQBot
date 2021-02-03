@@ -57,7 +57,7 @@ public class BotService {
     Map<Long, Long> kuaiCanTimeMap = new HashMap<>();
     Map<Long, Integer> kuaiCanNumMap = new HashMap<>();
     int kuaiCanCache = 1000 * 60 * 60 * 3;
-    int kuaiCanNum = 5;
+    int kuaiCanNum = 500;
 
     public String[] getGroupNewsList() {
         //群号缓存
@@ -505,6 +505,21 @@ public class BotService {
             }
         } else {
             sendGroupMessage(groupId, "三小时内已经用了" + kuaiCanNum + "次,不能再推荐了,三小时后再试试吧");
+        }
+    }
+
+    /**
+     * 今日NBA赛事
+     *
+     * @param id 群号
+     * @return map status-状态;msg-执行信息;result-返回值
+     */
+    public void getNBAInfo(Long id) {
+        Map map = BotUtils.getNBAInfo();
+        if (map.get("status").equals("success")) {
+            sendGroupMessage(id, (String) map.get("result"));
+        } else {
+            sendGroupMessage(id, (String) map.get("msg"));
         }
     }
 }
