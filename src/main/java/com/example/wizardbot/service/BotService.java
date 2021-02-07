@@ -57,7 +57,7 @@ public class BotService {
     Map<Long, Long> kuaiCanTimeMap = new HashMap<>();
     Map<Long, Integer> kuaiCanNumMap = new HashMap<>();
     int kuaiCanCache = 1000 * 60 * 60 * 3;
-    int kuaiCanNum = 500;
+    int kuaiCanNum = 20;
 
     public String[] getGroupNewsList() {
         //群号缓存
@@ -137,18 +137,18 @@ public class BotService {
             if (messageReceipt.isToGroup()) {
                 logger.info("sendMessage,success");
                 resultMap.put("status", "success");
-                resultMap.put("msg", "sendMessage,success");
+                resultMap.put("msg", "success");
                 resultMap.put("result", "success");
                 return resultMap;
             }
             logger.info("sendMessage,没有发到群");
             resultMap.put("status", "fail");
-            resultMap.put("msg", "sendMessage,没有发到群");
+            resultMap.put("msg", "没有发到群");
             return resultMap;
         } else {
             logger.info("sendMessage,群号或内容不能为空");
             resultMap.put("status", "fail");
-            resultMap.put("msg", "sendMessage,群号或内容不能为空");
+            resultMap.put("msg", "群号或内容不能为空");
             return resultMap;
         }
     }
@@ -166,18 +166,18 @@ public class BotService {
             if (messageReceipt.isToGroup()) {
                 logger.info("sendGroupImage,success");
                 resultMap.put("status", "success");
-                resultMap.put("msg", "sendGroupImage,success");
+                resultMap.put("msg", "success");
                 resultMap.put("result", "success");
                 return resultMap;
             }
             logger.info("sendGroupImage,没有发到群");
             resultMap.put("status", "fail");
-            resultMap.put("msg", "sendGroupImage,没有发到群");
+            resultMap.put("msg", "没有发到群");
             return resultMap;
         } catch (Exception e) {
             logger.info("sendGroupImage,发送群图片失败");
             resultMap.put("status", "fail");
-            resultMap.put("msg", "sendGroupImage,发送群图片失败");
+            resultMap.put("msg", "发送群图片失败");
             return resultMap;
         }
     }
@@ -193,7 +193,7 @@ public class BotService {
             if (redisService.get("autoDate").equals(BotUtils.getCurrDate())) {
                 logger.info("autoSendNews,已经发过了");
                 resultMap.put("status", "fail");
-                resultMap.put("msg", "autoSendNews,已经发过了");
+                resultMap.put("msg", "已经发过了");
                 return resultMap;
             }
         }
@@ -217,19 +217,19 @@ public class BotService {
 
                 logger.info("autoSendNews,success");
                 resultMap.put("status", "success");
-                resultMap.put("msg", "autoSendNews,success");
+                resultMap.put("msg", "success");
                 resultMap.put("result", "success");
                 return resultMap;
             } else {
                 logger.info("autoSendNews," + newsMap.get("msg"));
                 resultMap.put("status", "fail");
-                resultMap.put("msg", "autoSendNews," + newsMap.get("msg"));
+                resultMap.put("msg", newsMap.get("msg"));
                 return resultMap;
             }
         }
         logger.info("autoSendNews,没有绑定群");
         resultMap.put("status", "fail");
-        resultMap.put("msg", "autoSendNews,没有绑定群");
+        resultMap.put("msg", "没有绑定群");
         return resultMap;
     }
 
@@ -244,7 +244,7 @@ public class BotService {
             if (botWeatherDateMap.get(city) + botWeatherCache > System.currentTimeMillis()) {
                 logger.info("weather,获取缓存");
                 resultMap.put("status", "success");
-                resultMap.put("msg", "weather,success");
+                resultMap.put("msg", "success");
                 resultMap.put("result", botWeatherContentMap.get(city));
                 return resultMap;
             }
@@ -253,7 +253,7 @@ public class BotService {
         String url = "https://bird.ioliu.cn/weather?city=" + city;
         OkHttpClient okHttpClient = new OkHttpClient();
         Request request = new Request.Builder().url(url).build();
-        Response response;
+        Response response = null;
         //获取返回的json
         String r;
         try {
@@ -263,14 +263,16 @@ public class BotService {
             } else {
                 logger.info("weather,网络异常");
                 resultMap.put("status", "fail");
-                resultMap.put("msg", "weather,网络异常");
+                resultMap.put("msg", "网络异常");
                 return resultMap;
             }
         } catch (IOException e) {
             logger.info("weather,IO异常");
             resultMap.put("status", "fail");
-            resultMap.put("msg", "weather,IO异常");
+            resultMap.put("msg", "IO异常");
             return resultMap;
+        } finally {
+            response.close();
         }
         Map<String, Object> map = JSON.parseObject(r, Map.class);
         String status = "" + map.get("status");
@@ -323,13 +325,13 @@ public class BotService {
 
             logger.info("weather,success");
             resultMap.put("status", "success");
-            resultMap.put("msg", "weather,success");
+            resultMap.put("msg", "success");
             resultMap.put("result", result);
             return resultMap;
         } else {
             logger.info("weather,不存在的地区");
             resultMap.put("status", "fail");
-            resultMap.put("msg", "weather,不存在的地区");
+            resultMap.put("msg", "不存在的地区");
             return resultMap;
         }
     }
@@ -348,14 +350,14 @@ public class BotService {
             if ((newsBase64Map.get("status")).equals("success")) {
                 logger.info("getCurrNewsBase64,success");
                 resultMap.put("status", "success");
-                resultMap.put("msg", "getCurrNewsBase64,success");
+                resultMap.put("msg", "success");
                 resultMap.put("result", newsBase64Map.get("result"));
                 return resultMap;
             }
         }
         logger.info("getCurrNewsBase64," + map.get("msg"));
         resultMap.put("status", "fail");
-        resultMap.put("msg", "getCurrNewsBase64," + map.get("msg"));
+        resultMap.put("msg", map.get("msg"));
         return resultMap;
 
     }
@@ -371,7 +373,7 @@ public class BotService {
         if (redisService.get(currDateStr) != null) {
             logger.info("getCurrNewsString,获取缓存success");
             resultMap.put("status", "success");
-            resultMap.put("msg", "getCurrNewsString,success");
+            resultMap.put("msg", "success");
             resultMap.put("result", redisService.get(currDateStr));
             return resultMap;
         }
@@ -422,25 +424,25 @@ public class BotService {
 
                     logger.info("getCurrNewsString,获取成功success");
                     resultMap.put("status", "success");
-                    resultMap.put("msg", "getCurrNewsString,success");
+                    resultMap.put("msg", "success");
                     resultMap.put("result", Jsoup.parse(resultStr).wholeText());
                     return resultMap;
                 } else {
                     logger.info("getCurrNewsString,今天没有新闻");
                     resultMap.put("status", "fail");
-                    resultMap.put("msg", "getCurrNewsString,今天没有新闻");
+                    resultMap.put("msg", "今天没有新闻");
                     return resultMap;
                 }
             } else {
                 logger.info("getCurrNewsString,网络异常");
                 resultMap.put("status", "fail");
-                resultMap.put("msg", "getCurrNewsString,网络异常");
+                resultMap.put("msg", "网络异常");
                 return resultMap;
             }
         } catch (IOException e) {
             logger.info("getCurrNewsString,网络异常");
             resultMap.put("status", "fail");
-            resultMap.put("msg", "getCurrNewsString,网络异常");
+            resultMap.put("msg", "网络异常");
             return resultMap;
         }
     }
@@ -473,10 +475,13 @@ public class BotService {
     /**
      * 小吃快猜推荐
      *
-     * @param city
+     * @param groupId  群号
+     * @param senderId QQ号
+     * @param city     城市,例,北京/淄博/桓台
+     * @param type     1-简餐,2-大餐
      * @return map status-状态;msg-执行信息;result-返回值
      */
-    public void getKuaiCan(Long groupId, Long senderId, String city) {
+    public void getCater(Long groupId, Long senderId, String city, String type) {
         boolean flag = true;
         if (kuaiCanTimeMap.get(senderId) != null) {
             //有的话判断时间
@@ -497,7 +502,13 @@ public class BotService {
             kuaiCanNumMap.put(senderId, 1);
         }
         if (flag) {
-            Map map = BotUtils.getKuaiCan(city);
+            String priceSection;
+            if (type.equals("1")) {
+                priceSection = "5,20";
+            } else {
+                priceSection = "40,1000";
+            }
+            Map map = BotUtils.getKuaiCan(global.getAk(), city, priceSection);
             if (map.get("status").equals("success")) {
                 sendGroupMessage(groupId, (String) map.get("result"));
             } else {

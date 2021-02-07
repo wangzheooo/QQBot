@@ -1,5 +1,9 @@
 package com.example.wizardbot.utils;
 
+import com.alibaba.fastjson.JSON;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -18,8 +22,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 /**
  * @Auther: auther
@@ -28,8 +32,6 @@ import java.util.List;
  */
 public class BotUtils {
     private static final Logger logger = LoggerFactory.getLogger(BotUtils.class);
-
-    private static Map<String, String> cookies = null;
 
     /**
      * 获取今天日期,新闻和天气用
@@ -78,7 +80,7 @@ public class BotUtils {
         } catch (ParseException e) {
             logger.info("getSurvivalDays,日期格式异常");
             resultMap.put("status", "fail");
-            resultMap.put("msg", "getSurvivalDays,日期异常");
+            resultMap.put("msg", "日期异常");
             return resultMap;
         }
         Calendar calendar = Calendar.getInstance();
@@ -92,7 +94,7 @@ public class BotUtils {
         if (currDate.before(date)) {
             logger.info("getSurvivalDays,日期大小异常");
             resultMap.put("status", "fail");
-            resultMap.put("msg", "getSurvivalDays,日期大小异常");
+            resultMap.put("msg", "日期大小异常");
             return resultMap;
         }
 
@@ -124,7 +126,7 @@ public class BotUtils {
 
         logger.info("getSurvivalDays,success");
         resultMap.put("status", "success");
-        resultMap.put("msg", "getSurvivalDays,success");
+        resultMap.put("msg", "success");
         resultMap.put("result", result);
         return resultMap;
     }
@@ -241,13 +243,13 @@ public class BotUtils {
 
             logger.info("stringToBase64,success");
             resultMap.put("status", "success");
-            resultMap.put("msg", "stringToBase64,success");
+            resultMap.put("msg", "success");
             resultMap.put("result", png_base64);
             return resultMap;
         } catch (IOException e) {
             logger.info("stringToBase64,IO异常");
             resultMap.put("status", "fail");
-            resultMap.put("msg", "stringToBase64,IO异常");
+            resultMap.put("msg", "IO异常");
             return resultMap;
         } finally {
             try {
@@ -259,88 +261,105 @@ public class BotUtils {
     }
 
     /**
-     * 快餐推荐
+     * 快餐推荐,用百度地图的api
      *
-     * @param city 城市拼音,例,beijign,zibo,huantai
+     * @param ak           百度地图密钥
+     * @param city         城市,例,北京/淄博/桓台
+     * @param priceSection 价格区间,例,5,25
      * @return map status-状态;msg-执行信息;result-返回值
      */
-    public static Map getKuaiCan(String city) {
+    public static Map getKuaiCan(String ak, String city, String priceSection) {
         Map resultMap = new HashMap();
-        List<Map> list = new ArrayList<>();
 
-        city = city.toLowerCase();
-        //ch10餐饮,g112小吃快餐,x5y25价格筛选,p2第二页
-        //http://www.dianping.com/huantai/ch10/g112x5y20
-        String url = "http://www.dianping.com/" + city + "/ch10/g112x5y20";
-        try {
-            if (cookies == null) {
-                Connection.Response res = Jsoup.connect(url).timeout(3000).execute();
-                cookies = res.cookies();
-            }
-            //设置多个请求头，头信息保存到Map集合中
-            Map<String, String> header = new HashMap<String, String>();
-            header.put("Host", "www.dianping.com");
-            header.put("Referer", url);
-            header.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36");
-            header.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
-            header.put("Accept-Language", "zh-cn,zh;q=0.5");
-            header.put("Accept-Encoding", "gzip, deflate");
-            header.put("Cache-Control", "no-cache");
-            header.put("Connection", "keep-alive");
-
-            Document document = Jsoup.connect(url).headers(header).cookies(cookies).get();
-            if (document.getElementsByClass("logo").text().equals("验证中心")) {
-                logger.info("getKuaiCan,需要验证");
-                resultMap.put("status", "fail");
-                resultMap.put("msg", "过会再试");
-                return resultMap;
-            }
-            //先看定位对不对
-            Elements addrElements = document.getElementsByClass("J-current-city");
-            if (addrElements.text().equals("上海")) {
-                if (!city.equals("shanghai")) {
-                    logger.info("getKuaiCan," + city + "," + addrElements.text());
-                    resultMap.put("status", "fail");
-                    resultMap.put("msg", "检查城市拼音");
-                    return resultMap;
-                }
-            }
-            //获取页数
-            Elements pageElements = document.getElementsByClass("PageLink");
-            int page = Integer.parseInt(pageElements.get(pageElements.size() - 1).text());
-
-            int pageTemp = BotUtils.getRandom(1, page);
-            if (pageTemp == 1) {
-                url = "http://www.dianping.com/" + city + "/ch10/g112x5y20";
-            } else {
-                url = "http://www.dianping.com/" + city + "/ch10/g112x5y20" + "p" + pageTemp;
-            }
-            Document d = Jsoup.connect(url).headers(header).cookies(cookies).get();
-
-            Elements elementsByTag = d.getElementById("shop-all-list").getElementsByClass("txt");
-            if (elementsByTag != null) {
-                for (Element tag : elementsByTag) {
-                    Map<String, String> map = new HashMap<>();
-                    for (Element a : tag.getElementsByAttributeValue("data-hippo-type", "shop")) {
-                        map.put("mer", a.attr("title"));
-                    }
-                    list.add(map);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (city == null || city.trim().equals("")) {
+            logger.info("getKuaiCan,城市不能为空");
+            resultMap.put("status", "fail");
+            resultMap.put("msg", "城市不能为空");
+            return resultMap;
         }
 
-        if (list != null) {
-            logger.info("getKuaiCan,success");
-            resultMap.put("status", "success");
-            resultMap.put("msg", "success");
-            resultMap.put("result", list.get(BotUtils.getRandom(0, list.size() - 1)).get("mer"));
-            return resultMap;
-        } else {
-            logger.info("getKuaiCan,未知原因");
+        if (priceSection == null || priceSection.trim().equals("")) {
+            logger.info("getKuaiCan,价格区间不能为空");
             resultMap.put("status", "fail");
-            resultMap.put("msg", "未知原因,过会再试");
+            resultMap.put("msg", "价格区间不能为空");
+            return resultMap;
+        }
+
+        //百度地图,地点检索url
+        String url = "http://api.map.baidu.com/place/v2/search?";
+        int pageSize = 20;
+
+        Map map = new HashMap();
+        map.put("query", "美食");//关键字
+//        map.put("tag", "快餐");
+        map.put("region", city);//检索行政区划区域
+        map.put("output", "json");
+        map.put("ak", ak);
+        map.put("scope", "2");//检索结果详细程度,1简单,2详细
+        map.put("filter", "industry_type:cater|price_section:" + priceSection);//检索过滤条件,cater（餐饮）
+        map.put("page_size", "" + pageSize);
+
+        Iterator it = map.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pairs = (Map.Entry) it.next();
+            url += pairs.getKey() + "=" + pairs.getValue() + "&";
+        }
+
+        OkHttpClient okHttpClient = new OkHttpClient();
+        Request request = new Request.Builder().url(url).build();
+        Response response = null;
+        try {
+            response = okHttpClient.newCall(request).execute();
+            if (response.isSuccessful()) {
+                Map<String, Object> mapJson = JSON.parseObject(response.body().string(), Map.class);
+                if (mapJson.get("result_type").equals("poi_type")) {
+                    List<Map> mapList = (List<Map>) mapJson.get("results");
+                    if (mapList.size() > 0) {
+                        String area1 = (String) mapList.get(0).get("area");
+                        String city1 = (String) mapList.get(0).get("city");
+                        if ((area1.indexOf(city) != -1) || (city1.indexOf(city) != -1)) {
+                            int total = (int) mapJson.get("total");
+                            int no = BotUtils.getRandom(1, total);
+                            int page = (no / pageSize) + 1;
+                            int pageNo = (no - (page - 1) * pageSize) == 0 ? pageSize : (no - (page - 1) * pageSize);
+
+                            url += "page_num=" + (page - 1);
+                            request = new Request.Builder().url(url).build();
+                            response = okHttpClient.newCall(request).execute();
+                            if (response.isSuccessful()) {
+                                mapJson = JSON.parseObject(response.body().string(), Map.class);
+                                mapList = (List<Map>) mapJson.get("results");
+
+                                Map shopMap = mapList.get(pageNo - 1);
+                                Map shopDetailInfoMap = (Map) shopMap.get("detail_info");
+                                String shopName = (String) shopMap.get("name");
+                                String shopAddress = (String) shopMap.get("address");
+                                String shopAveragePrice = (String) shopDetailInfoMap.get("price");
+                                String shopOverallRating = (String) shopDetailInfoMap.get("overall_rating");
+
+                                String result = "店铺:" + shopName + "\n" + "地址:" + shopAddress + "\n" + "人均:" + shopAveragePrice + "\n" + "评价:" + (shopOverallRating == null ? "无评价" : shopOverallRating);
+                                logger.info("getKuaiCan,success");
+                                resultMap.put("status", "success");
+                                resultMap.put("msg", "success");
+                                resultMap.put("result", result);
+                                return resultMap;
+                            }
+                        }
+                    }
+                }
+                logger.info("getKuaiCan,城市错误," + city);
+                resultMap.put("status", "fail");
+                resultMap.put("msg", "城市错误");
+            }
+            logger.info("getKuaiCan,接口异常");
+            resultMap.put("status", "fail");
+            resultMap.put("msg", "接口异常");
+        } catch (Exception e) {
+            logger.info("getKuaiCan,网络异常");
+            resultMap.put("status", "fail");
+            resultMap.put("msg", "网络异常");
+        } finally {
+            response.close();
             return resultMap;
         }
     }
@@ -365,7 +384,11 @@ public class BotUtils {
                 for (Element tag : elementsByTag) {
                     String[] str1 = tag.getElementsByClass("team_vs_a_1").text().split(" ");
                     String[] str2 = tag.getElementsByClass("team_vs_a_2").text().split(" ");
-                    resultStr += str1[1] + str1[0] + "-" + str2[0] + str2[1] + "\n";
+                    if (str1.length == 2 && str2.length == 2) {
+                        resultStr += str1[1] + " " + str1[0] + " - " + str2[0] + " " + str2[1] + "\n";
+                    } else {
+                        resultStr += str1[0] + " - " + str2[0] + "\n";
+                    }
                 }
                 logger.info("getNBAInfo,success");
                 resultMap.put("status", "success");

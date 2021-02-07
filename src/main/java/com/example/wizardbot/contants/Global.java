@@ -29,6 +29,9 @@ public class Global {
     @Value("${sockPort}")
     private Integer sockPort;
 
+    @Value("${baidu.ak}")
+    private String ak;
+
     //机器人对象
     private Bot wizardBot;
 
@@ -37,14 +40,15 @@ public class Global {
 
     private String menu = "" +
             "注:命令前带有小数点\n" +
-            "1.发送(.功能介绍)\n" +
+            "1.发送(.菜单)\n" +
             "2.发送(.开启每日简讯)\n" +
             "3.发送(.关闭每日简讯)\n" +
             "4.发送(.你好)\n" +
             "5.发送(.新闻)\n" +
-            "6.发送(.快餐推荐zibo)\n" +
-            "7.发送(.年龄19951212)\n" +
-            "8.发送(淄博天气)\n" +
-            "9.发送,(.二维码123)\n" +
-            "10.发送,(.nba)\n";
+            "6.发送(.简餐桓台)\n" +
+            "7.发送(.大餐桓台)\n" +
+            "8.发送(.年龄19951212)\n" +
+            "9.发送(淄博天气)\n" +
+            "10.发送,(.二维码123)\n" +
+            "11.发送,(.nba)\n";
 }
