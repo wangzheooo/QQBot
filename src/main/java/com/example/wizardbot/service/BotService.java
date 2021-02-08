@@ -125,6 +125,21 @@ public class BotService {
         }
     }
 
+    public int getLastGroupNum() {
+        return (int) redisService.get("groupNum");
+    }
+
+    public boolean subGroupNum() {
+        int num = (int) redisService.get("groupNum");
+        if (num > 0) {
+            redisService.set("groupNum", num - 1);
+            logger.info("subGroupNum,剩余数-1");
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     /**
      * 发送群消息
      *
@@ -212,8 +227,13 @@ public class BotService {
                         }
                     }
                 }
+
                 //上传今天日期,证明今天已经启动
                 redisService.set("autoDate", BotUtils.getCurrDate());
+                logger.info("autoSendNews,updateCurrNews");
+                //删除昨天的新闻
+                redisService.remove(BotUtils.getYesterdayDate());
+                logger.info("autoSendNews,removeYesterdayNews");
 
                 logger.info("autoSendNews,success");
                 resultMap.put("status", "success");
@@ -377,74 +397,147 @@ public class BotService {
             resultMap.put("result", redisService.get(currDateStr));
             return resultMap;
         }
-        logger.info("news,重新获取");
-        String url = "https://t.me/s/pojieapk";
-        OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
         // 设置代理地址
         SocketAddress sa = new InetSocketAddress("127.0.0.1", global.getSockPort());
         builder.proxy(new Proxy(Proxy.Type.SOCKS, sa));
-
         OkHttpClient client = builder.build();
+
+        Map map1 = getCurrNewsString1(client, currDateStr);
+        if (map1.get("status").equals("success")) {
+            resultMap.put("status", "success");
+            resultMap.put("msg", "success");
+            resultMap.put("result", map1.get("result"));
+            return resultMap;
+        }
+
+        Map map2 = getCurrNewsString2(client, BotUtils.getCurrDate1());
+        if (map2.get("status").equals("success")) {
+            resultMap.put("status", "success");
+            resultMap.put("msg", "success");
+            resultMap.put("result", map2.get("result"));
+            return resultMap;
+        }
+
+        return map2;
+    }
+
+    /**
+     * 获取当天新闻简讯,文字,来自每天60秒简报
+     *
+     * @return map status-状态;msg-执行信息;result-返回值
+     */
+    public Map getCurrNewsString1(OkHttpClient client, String currDateStr) {
+        Map resultMap = new HashMap();
+        logger.info("news获取,每天60秒简报");
+        String url = "https://t.me/s/pojieapk";
+
         Request request = new Request.Builder().url(url).build();
         Response response;
+
         try {
             response = client.newCall(request).execute();
-            String result;//获取html页面信息
             if (response.isSuccessful()) {
-                result = response.body().string();
-//            System.out.println(result);
-                Document document = Jsoup.parse(result);//html的页面信息,String转Document
-//            r = document.body().toString();
-
-                //获取所有简讯,按天的,根据简讯的class筛选
-//            System.out.println(document.body().getElementsByClass("tgme_widget_message_text"));
-                List<Element> elementList = document.body().getElementsByClass("tgme_widget_message_text");
-//            System.out.println(elementList.get(0));
-
-                Element currElement = null;//当天简讯
-                String dateStr;//简讯日期
-                Element elementTemp;
-                String resultStr;
-                for (int i = elementList.size(); i > 0; i--) {
-                    elementTemp = elementList.get(i - 1);
-                    dateStr = elementTemp.getElementsByIndexEquals(0).get(0).toString();
-                    if (dateStr.indexOf(currDateStr) != -1) {
-                        currElement = elementTemp;
-                        break;
-                    }
-                }
+                Element currElement = getElement(response.body().string(), currDateStr);
                 if (currElement != null) {
-//                System.out.println("" + currElement.text());
-                    resultStr = ("" + currElement).replace("<br><br>", "\n");
-//                System.out.println(resultStr);
-//                return currElement.wholeText();
-//                    botNewsMap.put(currDateStr, Jsoup.parse(resultStr).wholeText());
-                    redisService.set(currDateStr, Jsoup.parse(resultStr).wholeText());
+                    String resultStr = ("" + currElement).replace("<br><br>", "\n");
+                    redisService.set(currDateStr, Jsoup.parse(resultStr).wholeText() + "\n------来自每天60秒简报");
 
-                    logger.info("getCurrNewsString,获取成功success");
+                    logger.info("getCurrNewsString1,获取成功success");
                     resultMap.put("status", "success");
                     resultMap.put("msg", "success");
-                    resultMap.put("result", Jsoup.parse(resultStr).wholeText());
+                    resultMap.put("result", Jsoup.parse(resultStr).wholeText() + "\n------来自每天60秒简报");
                     return resultMap;
                 } else {
-                    logger.info("getCurrNewsString,今天没有新闻");
+                    logger.info("getCurrNewsString1,今天没有新闻");
                     resultMap.put("status", "fail");
                     resultMap.put("msg", "今天没有新闻");
                     return resultMap;
                 }
             } else {
-                logger.info("getCurrNewsString,网络异常");
+                logger.info("getCurrNewsString1,网络异常");
                 resultMap.put("status", "fail");
                 resultMap.put("msg", "网络异常");
                 return resultMap;
             }
         } catch (IOException e) {
-            logger.info("getCurrNewsString,网络异常");
+            logger.info("getCurrNewsString1,网络异常");
             resultMap.put("status", "fail");
             resultMap.put("msg", "网络异常");
             return resultMap;
         }
+    }
+
+    /**
+     * 获取当天新闻简讯,文字,来自每日热点简报
+     *
+     * @return map status-状态;msg-执行信息;result-返回值
+     */
+    public Map getCurrNewsString2(OkHttpClient client, String currDateStr) {
+        Map resultMap = new HashMap();
+
+        logger.info("news获取,每日热点简报");
+        String url = "https://t.me/s/focusnew";
+
+        Request request = new Request.Builder().url(url).build();
+        Response response;
+        try {
+            response = client.newCall(request).execute();
+            if (response.isSuccessful()) {
+                Element currElement = getElement(response.body().string(), currDateStr);
+                if (currElement != null) {
+                    String resultStr = ("" + currElement).replace("<br><br>", "\n");
+                    redisService.set(BotUtils.getCurrDate(), Jsoup.parse(resultStr).wholeText() + "\n------来自每日热点简报");
+
+                    logger.info("getCurrNewsString2,获取成功");
+                    resultMap.put("status", "success");
+                    resultMap.put("msg", "success");
+                    resultMap.put("result", Jsoup.parse(resultStr).wholeText() + "\n------来自每日热点简报");
+                    return resultMap;
+                } else {
+                    logger.info("getCurrNewsString2,今天没有新闻");
+                    resultMap.put("status", "fail");
+                    resultMap.put("msg", "今天没有新闻");
+                    return resultMap;
+                }
+            } else {
+                logger.info("getCurrNewsString2,网络异常");
+                resultMap.put("status", "fail");
+                resultMap.put("msg", "网络异常");
+                return resultMap;
+            }
+        } catch (IOException e) {
+            logger.info("getCurrNewsString2,网络异常");
+            resultMap.put("status", "fail");
+            resultMap.put("msg", "网络异常");
+            return resultMap;
+        }
+    }
+
+    /**
+     * 用Jsoup筛选出今日的Element,没有就返回null
+     *
+     * @return currElement 今天的新闻Element
+     */
+    public Element getElement(String result, String currDateStr) {
+        Document document = Jsoup.parse(result);//html的页面信息,String转Document
+
+        //获取所有简讯,按天的,根据简讯的class筛选
+        List<Element> elementList = document.body().getElementsByClass("tgme_widget_message_text");
+
+        Element currElement = null;//当天简讯
+        String dateStr;//简讯日期
+        Element elementTemp;
+        for (int i = elementList.size(); i > 0; i--) {
+            elementTemp = elementList.get(i - 1);
+            dateStr = elementTemp.childNode(0).toString();
+            if (dateStr.indexOf(currDateStr) != -1) {
+                currElement = elementTemp;
+                break;
+            }
+        }
+        return currElement;
     }
 
     /**

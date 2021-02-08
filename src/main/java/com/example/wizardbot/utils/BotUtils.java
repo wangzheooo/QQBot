@@ -4,14 +4,12 @@ import com.alibaba.fastjson.JSON;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.GetMapping;
 import sun.misc.BASE64Encoder;
 
 import javax.imageio.ImageIO;
@@ -46,6 +44,33 @@ public class BotUtils {
             return "" + month + "月" + "0" + day + "日";
         }
         return "" + month + "月" + day + "日";
+    }
+
+    /**
+     * 获取今天日期,新闻每日热点简报用
+     *
+     * @return date 例:1月9日,1月10日
+     */
+    public static String getCurrDate1() {
+        Calendar calendar = Calendar.getInstance();
+        return "" + (calendar.get(Calendar.MONTH) + 1) + "月" + (calendar.get(Calendar.DATE)) + "日";
+    }
+
+    /**
+     * 获取昨天日期,新闻用
+     *
+     * @return date 例:1月09日,1月10日
+     */
+    public static String getYesterdayDate() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(calendar.DATE, -1);
+
+        int day = calendar.get(Calendar.DATE);
+        if (day < 10) {
+            return "" + (calendar.get(Calendar.MONTH) + 1) + "月" + "0" + day + "日";
+        }
+        return "" + (calendar.get(Calendar.MONTH) + 1) + "月" + day + "日";
     }
 
     /**

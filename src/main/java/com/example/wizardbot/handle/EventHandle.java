@@ -2,7 +2,6 @@ package com.example.wizardbot.handle;
 
 import com.example.wizardbot.contants.Global;
 import com.example.wizardbot.service.BotService;
-import com.example.wizardbot.utils.BotUtils;
 import kotlin.coroutines.CoroutineContext;
 import net.mamoe.mirai.event.EventHandler;
 import net.mamoe.mirai.event.ListeningStatus;
@@ -47,15 +46,18 @@ public class EventHandle extends SimpleListenerHost {
 
     @EventHandler()
     public ListeningStatus onBotInvitedJoinGroupRequest(BotInvitedJoinGroupRequestEvent event) {
-        event.accept();
-        logger.info("被拉入群" + event.getGroupId());
+        if (botService.getLastGroupNum() > 0) {
+            event.accept();
+            logger.info("被拉入群" + event.getGroupId());
+            botService.subGroupNum();
+        }
         return ListeningStatus.LISTENING;
     }
 
     @EventHandler()
     public ListeningStatus onBotJoinGroup(BotJoinGroupEvent event) {
         event.getGroup().sendMessage(new PlainText(global.getMenu()));
-        logger.info("首次进群功能介绍" + event.getGroup().getId());
+        logger.info("首次进群功能介绍 " + event.getGroup().getId());
         return ListeningStatus.LISTENING;
     }
 
