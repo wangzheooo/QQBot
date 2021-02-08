@@ -435,11 +435,11 @@ public class BotService {
 
         Request request = new Request.Builder().url(url).build();
         Response response;
-
         try {
             response = client.newCall(request).execute();
             if (response.isSuccessful()) {
                 Element currElement = getElement(response.body().string(), currDateStr);
+                response.close();
                 if (currElement != null) {
                     String resultStr = ("" + currElement).replace("<br><br>", "\n");
                     redisService.set(currDateStr, Jsoup.parse(resultStr).wholeText() + "\n------来自每天60秒简报");
@@ -486,6 +486,7 @@ public class BotService {
             response = client.newCall(request).execute();
             if (response.isSuccessful()) {
                 Element currElement = getElement(response.body().string(), currDateStr);
+                response.close();
                 if (currElement != null) {
                     String resultStr = ("" + currElement).replace("<br><br>", "\n");
                     redisService.set(BotUtils.getCurrDate(), Jsoup.parse(resultStr).wholeText() + "\n------来自每日热点简报");
