@@ -293,36 +293,56 @@ public class BotUtils {
      * @param priceSection 价格区间,例,5,25
      * @return map status-状态;msg-执行信息;result-返回值
      */
-    public static Map getKuaiCan(String ak, String city, String priceSection) {
+    public static Map getCater(String ak, String city, String priceSection) {
         Map resultMap = new HashMap();
 
-        if (city == null || city.trim().equals("")) {
-            logger.info("getKuaiCan,城市不能为空");
-            resultMap.put("status", "fail");
-            resultMap.put("msg", "城市不能为空");
-            return resultMap;
-        }
+        String url = "http://api.map.baidu.com/geocoding/v3/?address=" + city + "&output=json&ak=" + ak;
+        OkHttpClient okHttpClient = new OkHttpClient();
+        Request request = new Request.Builder().url(url).build();
+        Response response = null;
 
-        if (priceSection == null || priceSection.trim().equals("")) {
-            logger.info("getKuaiCan,价格区间不能为空");
+        String lng = "";
+        String lat = "";
+
+        try {
+            response = okHttpClient.newCall(request).execute();
+            if (response.isSuccessful()) {
+                Map<String, Object> mapJson = JSON.parseObject(response.body().string(), Map.class);
+                if (mapJson.get("status").equals("1")) {
+                    logger.info("getCater,地点错误," + mapJson.toString());
+                    resultMap.put("status", "fail");
+                    resultMap.put("msg", "地点错误,尝试改改地点名");
+                    response.close();
+                    return resultMap;
+                } else {
+                    Map map = (Map) ((Map) mapJson.get("result")).get("location");
+                    lng = String.valueOf(map.get("lng"));
+                    lat = String.valueOf(map.get("lat"));
+                }
+            }
+        } catch (Exception e) {
+            logger.info("getCater,获取地点时异常");
             resultMap.put("status", "fail");
-            resultMap.put("msg", "价格区间不能为空");
+            resultMap.put("msg", "获取地点时异常");
+            response.close();
             return resultMap;
         }
 
         //百度地图,地点检索url
-        String url = "http://api.map.baidu.com/place/v2/search?";
+        url = "http://api.map.baidu.com/place/v2/search?";
         int pageSize = 20;
 
         Map map = new HashMap();
         map.put("query", "美食");//关键字
-//        map.put("tag", "快餐");
-        map.put("region", city);//检索行政区划区域
         map.put("output", "json");
         map.put("ak", ak);
         map.put("scope", "2");//检索结果详细程度,1简单,2详细
         map.put("filter", "industry_type:cater|price_section:" + priceSection);//检索过滤条件,cater（餐饮）
         map.put("page_size", "" + pageSize);
+//        map.put("tag", "中餐厅,外国餐厅,小吃快餐店,其他");
+
+        map.put("location", lat + "," + lng);//经纬度
+        map.put("radius", "8000");//半径
 
         Iterator it = map.entrySet().iterator();
         while (it.hasNext()) {
@@ -330,9 +350,8 @@ public class BotUtils {
             url += pairs.getKey() + "=" + pairs.getValue() + "&";
         }
 
-        OkHttpClient okHttpClient = new OkHttpClient();
-        Request request = new Request.Builder().url(url).build();
-        Response response = null;
+
+        request = new Request.Builder().url(url).build();
         try {
             response = okHttpClient.newCall(request).execute();
             if (response.isSuccessful()) {
@@ -340,53 +359,89 @@ public class BotUtils {
                 if (mapJson.get("result_type").equals("poi_type")) {
                     List<Map> mapList = (List<Map>) mapJson.get("results");
                     if (mapList.size() > 0) {
-                        String area1 = (String) mapList.get(0).get("area");
-                        String city1 = (String) mapList.get(0).get("city");
-                        if ((area1.indexOf(city) != -1) || (city1.indexOf(city) != -1)) {
-                            int total = (int) mapJson.get("total");
-                            int no = BotUtils.getRandom(1, total);
-                            int page = (no / pageSize) + 1;
-                            int pageNo = (no - (page - 1) * pageSize) == 0 ? pageSize : (no - (page - 1) * pageSize);
+                        int total = (int) mapJson.get("total");
+                        int no = BotUtils.getRandom(1, total);
+                        int page = (no / pageSize) + 1;
+                        int pageNo = (no - (page - 1) * pageSize) == 0 ? pageSize : (no - (page - 1) * pageSize);
 
-                            url += "page_num=" + (page - 1);
-                            request = new Request.Builder().url(url).build();
-                            response = okHttpClient.newCall(request).execute();
-                            if (response.isSuccessful()) {
-                                mapJson = JSON.parseObject(response.body().string(), Map.class);
-                                mapList = (List<Map>) mapJson.get("results");
+                        url += "page_num=" + (page - 1);
+                        request = new Request.Builder().url(url).build();
+                        response = okHttpClient.newCall(request).execute();
+                        if (response.isSuccessful()) {
+                            mapJson = JSON.parseObject(response.body().string(), Map.class);
+                            mapList = (List<Map>) mapJson.get("results");
 
-                                Map shopMap = mapList.get(pageNo - 1);
-                                Map shopDetailInfoMap = (Map) shopMap.get("detail_info");
-                                String shopName = (String) shopMap.get("name");
-                                String shopAddress = (String) shopMap.get("address");
-                                String shopAveragePrice = (String) shopDetailInfoMap.get("price");
-                                String shopOverallRating = (String) shopDetailInfoMap.get("overall_rating");
+                            Map shopMap = mapList.get(pageNo - 1);
+                            Map shopDetailInfoMap = (Map) shopMap.get("detail_info");
+                            String tag = (String) shopDetailInfoMap.get("tag");
 
-                                String result = "店铺:" + shopName + "\n" + "地址:" + shopAddress + "\n" + "人均:" + shopAveragePrice + "\n" + "评价:" + (shopOverallRating == null ? "无评价" : shopOverallRating);
-                                logger.info("getKuaiCan,success");
-                                resultMap.put("status", "success");
-                                resultMap.put("msg", "success");
-                                resultMap.put("result", result);
-                                return resultMap;
+                            if (getEx(tag)) {
+                                int nextNo = 1;//下一个商品的序号,下标是nextNo-1
+                                for (int i = 1; i <= mapList.size(); i++) {
+                                    nextNo = pageNo + i;
+                                    if (nextNo > pageSize) {
+                                        nextNo -= pageSize;
+                                    }
+                                    //重新获取
+                                    shopMap = mapList.get(nextNo - 1);
+                                    shopDetailInfoMap = (Map) shopMap.get("detail_info");
+                                    tag = (String) shopDetailInfoMap.get("tag");
+                                    if (!getEx(tag)) {
+                                        break;
+                                    }
+                                }
                             }
+
+                            String shopName = (String) shopMap.get("name");
+                            String shopAddress = (String) shopMap.get("address");
+
+                            String shopAveragePrice = (String) shopDetailInfoMap.get("price");
+                            String shopOverallRating = (String) shopDetailInfoMap.get("overall_rating");
+
+                            String result = "店铺:" + shopName + "\n" + "地址:" + shopAddress + "\n" + "人均:" + shopAveragePrice + "元\n" + "评价:" + (shopOverallRating == null ? "无评价" : shopOverallRating);
+                            logger.info("getCater,success");
+                            resultMap.put("status", "success");
+                            resultMap.put("msg", "success");
+                            resultMap.put("result", result);
+                            return resultMap;
                         }
                     }
                 }
-                logger.info("getKuaiCan,城市错误," + city);
+                logger.info("getCater,城市错误," + city);
                 resultMap.put("status", "fail");
                 resultMap.put("msg", "城市错误");
+                response.close();
+                return resultMap;
             }
-            logger.info("getKuaiCan,接口异常");
-            resultMap.put("status", "fail");
-            resultMap.put("msg", "接口异常");
-        } catch (Exception e) {
-            logger.info("getKuaiCan,网络异常");
+            logger.info("getCater,网络异常");
             resultMap.put("status", "fail");
             resultMap.put("msg", "网络异常");
+        } catch (Exception e) {
+            logger.info("getCater,异常");
+            resultMap.put("status", "fail");
+            resultMap.put("msg", "异常");
         } finally {
             response.close();
             return resultMap;
         }
+    }
+
+    /**
+     * 判断tag是否含有不想要的店
+     *
+     * @return true-含有额外内容,false-不含有
+     */
+    public static boolean getEx(String tag) {
+        boolean flag = false;
+        String[] strEx = {"蛋糕", "咖啡", "茶座", "酒吧"};
+        for (int i = 0; i < strEx.length; i++) {
+            if (tag.indexOf(strEx[i]) != -1) {
+                logger.info("getEx,含有" + strEx[i] + "," + tag);
+                flag = true;
+                break;
+            }
+        }
+        return flag;
     }
 
     /**

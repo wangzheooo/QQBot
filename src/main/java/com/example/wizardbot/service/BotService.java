@@ -602,7 +602,7 @@ public class BotService {
             } else {
                 priceSection = "40,1000";
             }
-            Map map = BotUtils.getKuaiCan(global.getAk(), city, priceSection);
+            Map map = BotUtils.getCater(global.getAk(), city, priceSection);
             if (map.get("status").equals("success")) {
                 sendGroupMessage(groupId, (String) map.get("result"));
             } else {
