@@ -1,6 +1,7 @@
 package com.example.wizardbot.utils;
 
 import com.alibaba.fastjson.JSON;
+import net.mamoe.mirai.message.data.MessageChain;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -487,5 +488,21 @@ public class BotUtils {
             resultMap.put("msg", "IO异常");
             return resultMap;
         }
+    }
+
+    /**
+     * 消息过滤,因为只要文字信息,所以接收的信息里,除了文字都过滤
+     *
+     * @param message 接受的消息
+     * @return messageTemp 过滤后的消息
+     */
+    public static String filterMessage(MessageChain message) {
+        String messageTemp = "";
+        for (int i = 0; i < message.size(); i++) {
+            if (("" + message.get(i)).indexOf("[mirai:") == -1) {
+                messageTemp += ("" + message.get(i)).replace("\r", " ").trim();
+            }
+        }
+        return messageTemp;
     }
 }

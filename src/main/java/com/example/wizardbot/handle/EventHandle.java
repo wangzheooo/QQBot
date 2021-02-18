@@ -2,6 +2,7 @@ package com.example.wizardbot.handle;
 
 import com.example.wizardbot.contants.Global;
 import com.example.wizardbot.service.BotService;
+import com.example.wizardbot.utils.BotUtils;
 import kotlin.coroutines.CoroutineContext;
 import net.mamoe.mirai.event.EventHandler;
 import net.mamoe.mirai.event.ListeningStatus;
@@ -63,23 +64,17 @@ public class EventHandle extends SimpleListenerHost {
 
     @EventHandler()
     public ListeningStatus onFriendMessage(FriendMessageEvent event) {
-        event.getFriend().sendMessage(new PlainText("只支持群聊"));
         logger.info("收到好友消息" + event.getFriend().getId());
+        event.getFriend().sendMessage(new PlainText("只支持群聊"));
         return ListeningStatus.LISTENING;
     }
 
     @NotNull
     @EventHandler
-    public ListeningStatus getGroupMessage(@NotNull GroupMessageEvent event) throws Exception {
+    public ListeningStatus getGroupMessage(@NotNull GroupMessageEvent event) {
         MessageChain message = event.getMessage();
-        String messageTemp = "";
+        String messageTemp = BotUtils.filterMessage(message);
 
-        //因为只要文字信息,所以接收的群信息里,除了文字都过滤掉了
-        for (int i = 0; i < message.size(); i++) {
-            if (("" + message.get(i)).indexOf("[mirai:") == -1) {
-                messageTemp += ("" + message.get(i)).replace("\r", " ").trim();
-            }
-        }
 //        System.out.println(messageTemp);
 //        System.out.println(event.getMessage().contentToString());
         if (messageTemp.equals(".开启每日简讯")) {
