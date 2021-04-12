@@ -42,7 +42,7 @@ public class WizardBot implements ApplicationRunner {
     public void startupBot() {
         // 使用自定义配置
         global.setWizardBot(BotFactory.INSTANCE.newBot(Long.parseLong(global.getAccount()), global.getPassword(), new BotConfiguration() {{
-            setWorkingDir(new File("C:/wizardbot"));
+            setWorkingDir(new File(global.getDirectory()));
             fileBasedDeviceInfo(); // 使用 device.json 存储设备信息
             setProtocol(MiraiProtocol.ANDROID_WATCH); // 切换协议
             redirectNetworkLogToFile();

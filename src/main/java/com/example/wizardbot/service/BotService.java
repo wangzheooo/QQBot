@@ -298,7 +298,23 @@ public class BotService {
         String status = "" + map.get("status");
         if (status.equals("ok")) {
             //模板
-            //桓台.今天2021-1-15,多云,温度1-10,东北风1-2级;明天2021-1-16,多云,温度1-10,东北风1-2级;后天2021-1-17,多云,温度1-10,东北风1-2级.天气更新时间2021-01-15 13:17.
+            // 中国-桓台
+            // 当前:
+            // 空气质量状况良,多云,温度1℃,体感温度1℃,东北风1-2级.
+            // 三天内的天气情况:
+            // 今天2021-1-15,多云,温度1℃-10℃,东北风1-2级;
+            // 明天2021-1-16,多云,温度1℃-10℃,东北风1-2级;
+            // 后天2021-1-17,多云,温度1℃-10℃,东北风1-2级.
+            // 生活指数:
+            // 空气指数:良,气象条件有利于空气污染物稀释、扩散和清除，可在室外正常活动。
+            // 舒适度指数:较不舒适,白天天气多云，同时会感到有些热，不很舒适。
+            // 洗车指数:较适宜,较适宜洗车，未来一天无雨，风力较小，擦洗一新的汽车至少能保持一天。
+            // 穿衣指数:炎热,天气炎热，建议着短衫、短裙、短裤、薄型T恤衫等清凉夏季服装。
+            // 感冒指数:少发,各项气象条件适宜，发生感冒机率较低。但请避免长期处于空调房间中，以防感冒。
+            // 运动指数:较适宜,天气较好，户外运动请注意防晒。推荐您进行室内运动。
+            // 旅游指数:较适宜,天气较好，温度较高，天气较热，但有微风相伴，还是比较适宜旅游的，不过外出时要注意防暑防晒哦！
+            // 紫外线指数:中等,属中等强度紫外线辐射天气，外出时建议涂擦SPF高于15、PA+的防晒护肤品，戴帽子、太阳镜。
+            // 天气更新时间2021-01-15 13:17
             String resultStart;
             String resultEnd;
             String result1 = "今天";
@@ -307,12 +323,25 @@ public class BotService {
 
             //获取地址
             Map basicMap = (Map) map.get("basic");
+            String cnty = "" + basicMap.get("cnty");
             String addr = "" + basicMap.get("city");
             //获取更新日期
             Map updateBasicMap = (Map) basicMap.get("update");
             String updateDate = "" + updateBasicMap.get("loc");
-            resultStart = addr + ".\n";
-            resultEnd = "天气更新时间" + updateDate + ".";
+
+            resultStart = cnty + "-" + addr + "\n";
+            resultEnd = "天气更新时间" + updateDate;
+
+            //获取空气质量状况
+            Map aqi = (Map) map.get("aqi");
+            Map aqiCity = (Map) aqi.get("city");
+
+            //获取实况天气
+            Map now = (Map) map.get("now");
+            Map condNow = (Map) now.get("cond");
+            Map windNow = (Map) now.get("wind");
+
+            String resultNow = "当前:\n" + "空气质量状况" + aqiCity.get("qlty") +","+ condNow.get("txt") + ",温度" + now.get("tmp") + "℃,体感温度" + now.get("fl") + "℃," + windNow.get("dir") + windNow.get("sc") + "级.\n";
 
             //获取7天数据
             List weatherData = (List) map.get("daily_forecast");
@@ -339,7 +368,28 @@ public class BotService {
                     continue;
                 }
             }
-            String result = resultStart + result1 + result2 + result3 + resultEnd;
+
+            //获取生活指数
+            Map suggestion = (Map) map.get("suggestion");
+            Map air = (Map) suggestion.get("air");
+            Map comf = (Map) suggestion.get("comf");
+            Map cw = (Map) suggestion.get("cw");
+            Map drsg = (Map) suggestion.get("drsg");
+            Map flu = (Map) suggestion.get("flu");
+            Map sport = (Map) suggestion.get("sport");
+            Map trav = (Map) suggestion.get("trav");
+            Map uv = (Map) suggestion.get("uv");
+            String resultSuggestion = "生活指数:\n"
+//                    + "空气指数:" + air.get("brf") + "," + air.get("txt") + "\n"
+//                    + "舒适度指数:" + comf.get("brf") + "," + comf.get("txt") + "\n"
+                    + "洗车指数:" + cw.get("brf") + "," + cw.get("txt") + "\n"
+                    + "穿衣指数:" + drsg.get("brf") + "," + drsg.get("txt") + "\n"
+//                    + "感冒指数:" + flu.get("brf") + "," + flu.get("txt") + "\n"
+//                    + "运动指数:" + sport.get("brf") + "," + sport.get("txt") + "\n"
+//                    + "旅游指数:" + trav.get("brf") + "," + trav.get("txt") + "\n"
+                    + "紫外线指数:" + uv.get("brf") + "," + uv.get("txt") + "\n";
+
+            String result = resultStart + resultNow + "三天内的天气情况:\n" + result1 + result2 + result3 + resultSuggestion + resultEnd;
             botWeatherDateMap.put(city, System.currentTimeMillis());
             botWeatherContentMap.put(city, result);
 

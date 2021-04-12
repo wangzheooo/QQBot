@@ -32,6 +32,14 @@ public class Global {
     @Value("${baidu.ak}")
     private String ak;
 
+    @Value("${device.directoryWindows}")
+    private String directoryWindows;
+
+    @Value("${device.directoryLinux}")
+    private String directoryLinux;
+
+    private String directory;
+
     //机器人对象
     private Bot wizardBot;
 
@@ -52,4 +60,13 @@ public class Global {
             "11.发送,(.nba)\n" +
             "注:\n" +
             "1.餐饮地理信息用城市名+地名/标志物,避免搜到重名的地方,例:桓台文体中心,山东辛泉村,黄岛泊里镇政府\n";
+
+    public String getDirectory() {
+        String system = System.getProperty("os.name");
+        if (system.toLowerCase().startsWith("win")) {
+            return getDirectoryWindows();
+        } else {
+            return getDirectoryLinux();
+        }
+    }
 }
