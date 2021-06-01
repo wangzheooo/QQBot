@@ -4,7 +4,7 @@
 
 QQ群机器人,基于mirai,一开始的目的是为了每天在群里看每日新闻简讯
 
-#### 软件架构
+#### 主要的软件架构和环境
 
 springboot
 
@@ -14,21 +14,17 @@ jsoup
 
 redis
 
+linux版的clash
+
 #### 参与贡献
 
 感谢mirai提供的开源项目
 
 网址:https://github.com/mamoe/mirai
 
-感谢proxypool提供的开源项目,和搭载的成品网站
-
-git网址:https://github.com/sansui233/proxypool
-
-网站:https://proxypoolsstest.herokuapp.com/
-
 #### 初衷
 
-前言:目前20210118,还能用
+前言:目前20210601,还能用
 
 初衷是因为看到telegram上有个频道每天推新闻简讯,我想把这个简讯用QQ群机器人转发到我的宿舍群,
 仅此而已,其他功能都是鸡肋.
@@ -44,15 +40,17 @@ git网址:https://github.com/sansui233/proxypool
 
 #### 主要功能
 
-每天8:00在群里发每日简讯
+每天8:00在群里发每日简讯,也可以手动获取简讯
 
-可以发送快餐推荐
+可以发送快餐推荐,调用了百度地图的api,推荐方圆8公里内的美食餐厅,如果是奶茶蛋糕店这样的店,会重新搜索
 
 可以发送天气信息
 
 可以年龄计算
 
 可以生成二维码
+
+可以显示nba当天赛程比分
 
 #### 以后
 
