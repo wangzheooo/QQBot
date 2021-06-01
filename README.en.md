@@ -35,8 +35,7 @@ linux版的clash
 
 机器人部分用了开源的mirai,文档非常详细,我只用了QQ群监听,还有消息发送两个功能
 
-爬虫用了jsoup+okhttp,最后选这个okhttp是因为支持sock5代理,毕竟telegram需要代理才行,我在服务器上
-运行了clash for windows,加上免费的配置文件,可实现免费代理,获取的网站用jsoup解析
+爬虫用了jsoup+okhttp,最后选这个okhttp是因为支持sock5代理,毕竟telegram需要代理才行,获取的网站用jsoup解析
 
 #### 主要功能
 
