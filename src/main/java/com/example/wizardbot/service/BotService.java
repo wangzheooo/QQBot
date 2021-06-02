@@ -205,7 +205,7 @@ public class BotService {
     public Map autoSendNews() {
         Map resultMap = new HashMap();
         if (redisService.get("autoDate") != null) {
-            if (redisService.get("autoDate").equals(BotUtils.getCurrDate())) {
+            if (redisService.get("autoDate").equals(BotUtils.getCurrDate2("t"))) {
                 logger.info("autoSendNews,已经发过了");
                 resultMap.put("status", "fail");
                 resultMap.put("msg", "已经发过了");
@@ -229,10 +229,10 @@ public class BotService {
                 }
 
                 //上传今天日期,证明今天已经启动
-                redisService.set("autoDate", BotUtils.getCurrDate());
+                redisService.set("autoDate", BotUtils.getCurrDate2("t"));
                 logger.info("autoSendNews,updateCurrNews");
                 //删除昨天的新闻
-                redisService.remove(BotUtils.getYesterdayDate());
+                redisService.remove(BotUtils.getCurrDate2("y"));
                 logger.info("autoSendNews,removeYesterdayNews");
 
                 logger.info("autoSendNews,success");
@@ -341,7 +341,7 @@ public class BotService {
             Map condNow = (Map) now.get("cond");
             Map windNow = (Map) now.get("wind");
 
-            String resultNow = "当前:\n" + "空气质量状况" + aqiCity.get("qlty") +","+ condNow.get("txt") + ",温度" + now.get("tmp") + "℃,体感温度" + now.get("fl") + "℃," + windNow.get("dir") + windNow.get("sc") + "级.\n";
+            String resultNow = "当前:\n" + "空气质量状况" + aqiCity.get("qlty") + "," + condNow.get("txt") + ",温度" + now.get("tmp") + "℃,体感温度" + now.get("fl") + "℃," + windNow.get("dir") + windNow.get("sc") + "级.\n";
 
             //获取7天数据
             List weatherData = (List) map.get("daily_forecast");
@@ -439,7 +439,7 @@ public class BotService {
      */
     public Map getCurrNewsString() {
         Map resultMap = new HashMap();
-        String currDateStr = BotUtils.getCurrDate();
+        String currDateStr = BotUtils.getCurrDate2("t");
         if (redisService.get(currDateStr) != null) {
             logger.info("getCurrNewsString,获取缓存success");
             resultMap.put("status", "success");
@@ -454,7 +454,7 @@ public class BotService {
         builder.proxy(new Proxy(Proxy.Type.SOCKS, sa));
         OkHttpClient client = builder.build();
 
-        Map map1 = getCurrNewsString1(client, currDateStr);
+        Map map1 = getCurrNewsString1(client);
         if (map1.get("status").equals("success")) {
             resultMap.put("status", "success");
             resultMap.put("msg", "success");
@@ -462,7 +462,7 @@ public class BotService {
             return resultMap;
         }
 
-        Map map2 = getCurrNewsString2(client, BotUtils.getCurrDate1());
+        Map map2 = getCurrNewsString2(client);
         if (map2.get("status").equals("success")) {
             resultMap.put("status", "success");
             resultMap.put("msg", "success");
@@ -478,7 +478,7 @@ public class BotService {
      *
      * @return map status-状态;msg-执行信息;result-返回值
      */
-    public Map getCurrNewsString1(OkHttpClient client, String currDateStr) {
+    public Map getCurrNewsString1(OkHttpClient client) {
         Map resultMap = new HashMap();
         logger.info("news获取,每天60秒简报");
         String url = "https://t.me/s/pojieapk";
@@ -488,11 +488,11 @@ public class BotService {
         try {
             response = client.newCall(request).execute();
             if (response.isSuccessful()) {
-                Element currElement = getElement(response.body().string(), currDateStr);
+                Element currElement = getElement(response.body().string());
                 response.close();
                 if (currElement != null) {
                     String resultStr = ("" + currElement).replace("<br><br>", "\n");
-                    redisService.set(currDateStr, Jsoup.parse(resultStr).wholeText() + "\n------来自每天60秒简报");
+                    redisService.set(BotUtils.getCurrDate2("t"), Jsoup.parse(resultStr).wholeText() + "\n------来自每天60秒简报");
 
                     logger.info("getCurrNewsString1,获取成功success");
                     resultMap.put("status", "success");
@@ -524,7 +524,7 @@ public class BotService {
      *
      * @return map status-状态;msg-执行信息;result-返回值
      */
-    public Map getCurrNewsString2(OkHttpClient client, String currDateStr) {
+    public Map getCurrNewsString2(OkHttpClient client) {
         Map resultMap = new HashMap();
 
         logger.info("news获取,每日热点简报");
@@ -535,7 +535,7 @@ public class BotService {
         try {
             response = client.newCall(request).execute();
             if (response.isSuccessful()) {
-                Element currElement = getElement(response.body().string(), currDateStr);
+                Element currElement = getElement(response.body().string());
                 response.close();
                 if (currElement != null) {
                     String resultStr = ("" + currElement).replace("<br><br>", "\n");
@@ -571,7 +571,7 @@ public class BotService {
      *
      * @return currElement 今天的新闻Element
      */
-    public Element getElement(String result, String currDateStr) {
+    public Element getElement(String result) {
         Document document = Jsoup.parse(result);//html的页面信息,String转Document
 
         //获取所有简讯,按天的,根据简讯的class筛选
@@ -583,7 +583,15 @@ public class BotService {
         for (int i = elementList.size(); i > 0; i--) {
             elementTemp = elementList.get(i - 1);
             dateStr = elementTemp.childNode(0).toString();
-            if (dateStr.indexOf(currDateStr) != -1) {
+            if (dateStr.indexOf(BotUtils.getCurrDate()) != -1) {
+                currElement = elementTemp;
+                break;
+            }
+            if (dateStr.indexOf(BotUtils.getCurrDate1()) != -1) {
+                currElement = elementTemp;
+                break;
+            }
+            if (dateStr.indexOf(BotUtils.getCurrDate2("t")) != -1) {
                 currElement = elementTemp;
                 break;
             }

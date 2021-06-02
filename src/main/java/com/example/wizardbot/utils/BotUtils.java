@@ -21,6 +21,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.*;
 
@@ -55,6 +57,28 @@ public class BotUtils {
     public static String getCurrDate1() {
         Calendar calendar = Calendar.getInstance();
         return "" + (calendar.get(Calendar.MONTH) + 1) + "月" + (calendar.get(Calendar.DATE)) + "日";
+    }
+
+    /**
+     * 获取日期,该日期格式用来规范缓存中的日期格式,格式:01月01日,01月10日,10月01日
+     *
+     * @param dayType 日期描述.y,昨天;t,今天.如果是null,返回当天时间
+     * @return date 例:01月09日,01月10日
+     */
+    public static String getCurrDate2(String dayType) {
+        if (dayType == null || dayType.equals("")) {
+            return DateTimeFormatter.ofPattern("MM月dd日").format(LocalDateTime.now());
+        } else {
+            if (dayType.equals("y")) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Calendar.HOUR_OF_DAY, -24);
+                return new SimpleDateFormat("MM月dd日").format(calendar.getTime());
+            } else if (dayType.equals("t")) {
+                return DateTimeFormatter.ofPattern("MM月dd日").format(LocalDateTime.now());
+            } else {
+                return DateTimeFormatter.ofPattern("MM月dd日").format(LocalDateTime.now());
+            }
+        }
     }
 
     /**
