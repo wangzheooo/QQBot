@@ -490,7 +490,13 @@ public class BotUtils {
                     String[] str1 = tag.getElementsByClass("team_vs_a_1").text().split(" ");
                     String[] str2 = tag.getElementsByClass("team_vs_a_2").text().split(" ");
                     if (str1.length == 2 && str2.length == 2) {
-                        resultStr += str1[1] + " " + str1[0] + " - " + str2[0] + " " + str2[1] + "\n";
+                        if (str1[1].indexOf("(") != -1) {
+                            resultStr += str1[0] + str1[1] + " " + 0 + " - " + 0 + " " + str2[1] + str2[0] + "\n";
+                        } else {
+                            resultStr += str1[1] + " " + str1[0] + " - " + str2[0] + " " + str2[1] + "\n";
+                        }
+                    } else if (str1.length == 3 && str2.length == 3) {
+                        resultStr += str1[1] + str1[2] + " " + str1[0] + " - " + str2[0] + " " + str2[2] + str2[1] + "\n";
                     } else {
                         resultStr += str1[0] + " - " + str2[0] + "\n";
                     }

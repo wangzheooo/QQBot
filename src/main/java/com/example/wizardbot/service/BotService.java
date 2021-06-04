@@ -539,7 +539,7 @@ public class BotService {
                 response.close();
                 if (currElement != null) {
                     String resultStr = ("" + currElement).replace("<br><br>", "\n");
-                    redisService.set(BotUtils.getCurrDate(), Jsoup.parse(resultStr).wholeText() + "\n------来自每日热点简报");
+                    redisService.set(BotUtils.getCurrDate2("t"), Jsoup.parse(resultStr).wholeText() + "\n------来自每日热点简报");
 
                     logger.info("getCurrNewsString2,获取成功");
                     resultMap.put("status", "success");

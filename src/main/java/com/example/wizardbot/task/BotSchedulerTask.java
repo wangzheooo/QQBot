@@ -61,4 +61,10 @@ public class BotSchedulerTask {
         botService.autoSendNews();
     }
 
+//    @Scheduled(cron = "*/20 * * * * ?")
+//    private void newsTaskTest3() {
+//        logger.info("newsTask4");
+//        botService.autoSendNews();
+//    }
+
 }
