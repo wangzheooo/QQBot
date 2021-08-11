@@ -1,6 +1,7 @@
 package com.example.wizardbot.service;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.example.wizardbot.contants.Global;
 import com.example.wizardbot.utils.BotUtils;
 import com.example.wizardbot.utils.QRCodeUtil;
@@ -672,6 +673,65 @@ public class BotService {
     }
 
     /**
+     * 小吃快猜推荐
+     *
+     * @param groupId  群号
+     * @param senderId QQ号
+     * @param type     1-简餐,2-大餐
+     * @return map status-状态;msg-执行信息;result-返回值
+     */
+    public void getCater(Long groupId, Long senderId, String type) {
+        String lng;
+        String lat;
+
+        String userInfoStr = (String) redisService.get("" + senderId);
+        if (userInfoStr == null || userInfoStr == "" || userInfoStr.equals("")) {
+            sendGroupMessage(groupId, "请先在群里发送您的位置信息");
+            return;
+        }
+
+        JSONObject userInfo = JSONObject.parseObject(userInfoStr);
+        lng = (String) userInfo.get("lng");
+        lat = (String) userInfo.get("lat");
+
+        boolean flag = true;
+        if (kuaiCanTimeMap.get(senderId) != null) {
+            //有的话判断时间
+            if (kuaiCanTimeMap.get(senderId) + kuaiCanCache > System.currentTimeMillis()) {
+                if (kuaiCanNumMap.get(senderId) >= kuaiCanNum) {
+                    flag = false;
+                } else {
+                    kuaiCanNumMap.put(senderId, kuaiCanNumMap.get(senderId) + 1);
+                }
+            } else {
+                //超过时间重新赋值
+                kuaiCanTimeMap.put(senderId, System.currentTimeMillis());
+                kuaiCanNumMap.put(senderId, 1);
+            }
+        } else {
+            //没有就创建
+            kuaiCanTimeMap.put(senderId, System.currentTimeMillis());
+            kuaiCanNumMap.put(senderId, 1);
+        }
+        if (flag) {
+            String priceSection;
+            if (type.equals("1")) {
+                priceSection = "5,20";
+            } else {
+                priceSection = "40,1000";
+            }
+            Map map = BotUtils.getCater(global.getAk(), lng, lat, priceSection);
+            if (map.get("status").equals("success")) {
+                sendGroupMessage(groupId, (String) map.get("result"));
+            } else {
+                sendGroupMessage(groupId, (String) map.get("msg"));
+            }
+        } else {
+            sendGroupMessage(groupId, "三小时内已经用了" + kuaiCanNum + "次,不能再推荐了,三小时后再试试吧");
+        }
+    }
+
+    /**
      * 今日NBA赛事
      *
      * @param id 群号
@@ -684,5 +744,25 @@ public class BotService {
         } else {
             sendGroupMessage(id, (String) map.get("msg"));
         }
+    }
+
+    /**
+     * 添加QQ用户位置信息
+     *
+     * @param senderId QQ号
+     * @param lat      维度
+     * @param lng      经度
+     * @param address  地址
+     * @return
+     */
+    public boolean addUserInfo(Long senderId, String lat, String lng, String address) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("lat", lat);
+        jsonObject.put("lng", lng);
+        jsonObject.put("address", address);
+
+        redisService.set("" + senderId, jsonObject.toString());
+        logger.info("addUserInfo,添加成功");
+        return true;
     }
 }

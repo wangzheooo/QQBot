@@ -1,5 +1,6 @@
 package com.example.wizardbot.handle;
 
+import com.alibaba.fastjson.JSONObject;
 import com.example.wizardbot.contants.Global;
 import com.example.wizardbot.service.BotService;
 import com.example.wizardbot.utils.BotUtils;
@@ -15,7 +16,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.Map;
 
 /**
@@ -73,8 +82,8 @@ public class EventHandle extends SimpleListenerHost {
     @EventHandler
     public ListeningStatus getGroupMessage(@NotNull GroupMessageEvent event) {
         MessageChain message = event.getMessage();
+//        System.out.println(message);
         String messageTemp = BotUtils.filterMessage(message);
-
 //        System.out.println(messageTemp);
 //        System.out.println(event.getMessage().contentToString());
         if (messageTemp.equals(".开启每日简讯")) {
@@ -118,6 +127,12 @@ public class EventHandle extends SimpleListenerHost {
             Long groupId = event.getSubject().getId();
             global.getExecutor().execute(() -> botService.getNBAInfo(groupId));
             return ListeningStatus.LISTENING;
+        } else if (messageTemp.equals(".简餐")) {
+            global.getExecutor().execute(() -> botService.getCater(event.getSubject().getId(), event.getSender().getId(), "1"));
+            return ListeningStatus.LISTENING;
+        } else if (messageTemp.equals(".大餐")) {
+            global.getExecutor().execute(() -> botService.getCater(event.getSubject().getId(), event.getSender().getId(), "2"));
+            return ListeningStatus.LISTENING;
         } else if (messageTemp.startsWith(".年龄")) {
             Long groupId = event.getSubject().getId();
             String finalMessageTemp = messageTemp;
@@ -144,6 +159,7 @@ public class EventHandle extends SimpleListenerHost {
             return ListeningStatus.LISTENING;
         } else if (messageTemp.startsWith(".简餐")) {
 //            event.getSubject().sendMessage(new PlainText("敬请期待"));
+            //无论是简餐还是大餐,地点最好越详细越好,例: .简餐张店区火炬公园 .简餐济南市奥体中心 .简餐济南市高新区软件园
             String finalMessageTemp = messageTemp;
             String[] str = finalMessageTemp.split(".简餐");
             if (str.length > 0) {
@@ -171,6 +187,54 @@ public class EventHandle extends SimpleListenerHost {
                     }
                 });
             }
+            return ListeningStatus.LISTENING;
+        } else if (event.getMessage().contentToString().indexOf("位置分享") != -1 || event.getMessage().contentToString().indexOf("sharedmap") != -1) {
+            Long groupId = event.getSubject().getId();
+            String jsonApp = event.getMessage().contentToString();
+
+            String lng = "";
+            String lat = "";
+            String address = "";
+
+            if (BotUtils.isJson(jsonApp)) {
+                JSONObject jsonObject = JSONObject.parseObject(jsonApp);
+
+                jsonObject = (JSONObject) ((JSONObject) jsonObject.get("meta")).get("Location.Search");
+
+                lng = (String) jsonObject.get("lng");
+                lat = (String) jsonObject.get("lat");
+                address = (String) jsonObject.get("address");
+
+                if (botService.addUserInfo(event.getSender().getId(), lat, lng, address)) {
+                    botService.sendGroupMessage(groupId, "已经记录你的位置,\n经度:" + lng + ";\n维度:" + lat + ";\n地址名:" + address);
+                } else {
+                    botService.sendGroupMessage(groupId, "记录位置失败,请联系管理员(0x0000001)");
+                }
+
+            } else if (BotUtils.isXML(jsonApp)) {
+                for (String s : jsonApp.split("&amp;")) {
+                    if (s.indexOf("lat=") != -1) {
+//                        System.out.println(s.split("lat=")[1]);
+                        lat = s.split("lat=")[1];
+                    }
+                    if (s.indexOf("lon=") != -1) {
+//                        System.out.println(s.split("lon=")[1]);
+                        lng = s.split("lon=")[1];
+                    }
+                    if (s.indexOf("loc=") != -1) {
+//                        System.out.println(s.split("loc=")[1]);
+                        address = s.split("loc=")[1];
+                    }
+                }
+                if ((!lat.equals("")) && (!lng.equals("")) && (!address.equals(""))) {
+                    if (botService.addUserInfo(event.getSender().getId(), lat, lng, address)) {
+                        botService.sendGroupMessage(groupId, "已经记录你的位置,\n经度:" + lng + ";\n维度:" + lat + ";\n地址名:" + address);
+                    } else {
+                        botService.sendGroupMessage(groupId, "记录位置失败,请联系管理员(0x0000001)");
+                    }
+                }
+            }
+
             return ListeningStatus.LISTENING;
         }
         return ListeningStatus.LISTENING;

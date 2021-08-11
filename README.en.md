@@ -60,6 +60,5 @@ linux版的clash
 1.启动项目后机器人报错,网络异常等信息,可以切一下登录设备,在startupBot方法里
 
 2.启动项目后机器人报验证码或者移动滑块,验证码的话根据提示的图片路径,把验证码填入控制栏并回车,移动滑块的
-
 话是打开浏览器,手动去操作滑块,这个操作可以去看https://github.com/project-mirai/mirai-login-solver-selenium,说的很详细
 

@@ -1,6 +1,8 @@
 package com.example.wizardbot.utils;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 import net.mamoe.mirai.message.data.MessageChain;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -11,14 +13,18 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.InputSource;
 import sun.misc.BASE64Encoder;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -367,7 +373,7 @@ public class BotUtils {
 //        map.put("tag", "中餐厅,外国餐厅,小吃快餐店,其他");
 
         map.put("location", lat + "," + lng);//经纬度
-        map.put("radius", "8000");//半径
+        map.put("radius", "2000");//半径
 
         Iterator it = map.entrySet().iterator();
         while (it.hasNext()) {
@@ -452,6 +458,113 @@ public class BotUtils {
     }
 
     /**
+     * 快餐推荐,用百度地图的api
+     *
+     * @param ak           百度地图密钥
+     * @param lng          经度
+     * @param lat          维度
+     * @param priceSection 价格区间,例,5,25
+     * @return map status-状态;msg-执行信息;result-返回值
+     */
+    public static Map getCater(String ak, String lng, String lat, String priceSection) {
+        Map resultMap = new HashMap();
+
+        OkHttpClient okHttpClient = new OkHttpClient();
+        Response response = null;
+        //百度地图,地点检索url
+        String url = "http://api.map.baidu.com/place/v2/search?";
+        int pageSize = 20;
+
+        Map map = new HashMap();
+        map.put("query", "美食");//关键字
+        map.put("output", "json");
+        map.put("ak", ak);
+        map.put("scope", "2");//检索结果详细程度,1简单,2详细
+        map.put("filter", "industry_type:cater|price_section:" + priceSection);//检索过滤条件,cater（餐饮）
+        map.put("page_size", "" + pageSize);
+//        map.put("tag", "中餐厅,外国餐厅,小吃快餐店,其他");
+
+        map.put("location", lat + "," + lng);//经纬度
+        map.put("radius", "2000");//半径
+
+        Iterator it = map.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pairs = (Map.Entry) it.next();
+            url += pairs.getKey() + "=" + pairs.getValue() + "&";
+        }
+
+
+        Request request = new Request.Builder().url(url).build();
+        try {
+            response = okHttpClient.newCall(request).execute();
+            if (response.isSuccessful()) {
+                Map<String, Object> mapJson = JSON.parseObject(response.body().string(), Map.class);
+                if (mapJson.get("result_type").equals("poi_type")) {
+                    List<Map> mapList = (List<Map>) mapJson.get("results");
+                    if (mapList.size() > 0) {
+                        int total = (int) mapJson.get("total");
+                        int no = BotUtils.getRandom(1, total);
+                        int page = (no / pageSize) + 1;
+                        int pageNo = (no - (page - 1) * pageSize) == 0 ? pageSize : (no - (page - 1) * pageSize);
+
+                        url += "page_num=" + (page - 1);
+                        request = new Request.Builder().url(url).build();
+                        response = okHttpClient.newCall(request).execute();
+                        if (response.isSuccessful()) {
+                            mapJson = JSON.parseObject(response.body().string(), Map.class);
+                            mapList = (List<Map>) mapJson.get("results");
+
+                            Map shopMap = mapList.get(pageNo - 1);
+                            Map shopDetailInfoMap = (Map) shopMap.get("detail_info");
+                            String tag = (String) shopDetailInfoMap.get("tag");
+
+                            if (getEx(tag)) {
+                                int nextNo = 1;//下一个商品的序号,下标是nextNo-1
+                                for (int i = 1; i <= mapList.size(); i++) {
+                                    nextNo = pageNo + i;
+                                    if (nextNo > pageSize) {
+                                        nextNo -= pageSize;
+                                    }
+                                    //重新获取
+                                    shopMap = mapList.get(nextNo - 1);
+                                    shopDetailInfoMap = (Map) shopMap.get("detail_info");
+                                    tag = (String) shopDetailInfoMap.get("tag");
+                                    if (!getEx(tag)) {
+                                        break;
+                                    }
+                                }
+                            }
+
+                            String shopName = (String) shopMap.get("name");
+                            String shopAddress = (String) shopMap.get("address");
+
+                            String shopAveragePrice = (String) shopDetailInfoMap.get("price");
+                            String shopOverallRating = (String) shopDetailInfoMap.get("overall_rating");
+
+                            String result = "店铺:" + shopName + "\n" + "地址:" + shopAddress + "\n" + "人均:" + shopAveragePrice + "元\n" + "评价:" + (shopOverallRating == null ? "无评价" : shopOverallRating);
+                            logger.info("getCater,success");
+                            resultMap.put("status", "success");
+                            resultMap.put("msg", "success");
+                            resultMap.put("result", result);
+                            return resultMap;
+                        }
+                    }
+                }
+            }
+            logger.info("getCater,网络异常");
+            resultMap.put("status", "fail");
+            resultMap.put("msg", "网络异常");
+        } catch (Exception e) {
+            logger.info("getCater,异常");
+            resultMap.put("status", "fail");
+            resultMap.put("msg", "异常");
+        } finally {
+            response.close();
+            return resultMap;
+        }
+    }
+
+    /**
      * 判断tag是否含有不想要的店
      *
      * @return true-含有额外内容,false-不含有
@@ -510,12 +623,12 @@ public class BotUtils {
                     }
                 }
 
-                if(resultStrTemp.trim().equals("")){
+                if (resultStrTemp.trim().equals("")) {
                     logger.info("getNBAInfo,今天没有比赛");
                     resultMap.put("status", "fail");
                     resultMap.put("msg", "今天没有比赛");
                     return resultMap;
-                }else {
+                } else {
                     resultStr += resultStrTemp;
                 }
 
@@ -553,4 +666,33 @@ public class BotUtils {
         }
         return messageTemp;
     }
+
+
+    /**
+     * 判断是否是json结构
+     */
+    public static boolean isJson(String str) {
+        try {
+            JSONObject.parseObject(str);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * 判断是否是xml结构
+     */
+    public static boolean isXML(String value) {
+        boolean flag = true;
+        try {
+            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
+            builder.parse(new InputSource(new StringReader(value)));
+        } catch (Exception e) {
+            flag = false;
+        }
+        return flag;
+    }
+
 }
