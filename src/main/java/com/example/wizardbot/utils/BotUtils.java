@@ -493,7 +493,6 @@ public class BotUtils {
             url += pairs.getKey() + "=" + pairs.getValue() + "&";
         }
 
-
         Request request = new Request.Builder().url(url).build();
         try {
             response = okHttpClient.newCall(request).execute();
